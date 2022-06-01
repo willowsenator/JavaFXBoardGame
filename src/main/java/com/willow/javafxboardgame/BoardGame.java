@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class BoardGame extends Application {
     private Group root, gameBoard;
@@ -37,6 +38,7 @@ public class BoardGame extends Application {
     public void start(Stage stage) {
         createBoardGameNodes();
         addNodesToSceneGraph();
+        stage.initStyle(StageStyle.TRANSPARENT);
         stage.setScene(scene);
 
         gameButton.setOnAction(actionEvent-> System.out.println("Starting Game"));
