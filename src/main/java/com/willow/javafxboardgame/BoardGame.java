@@ -19,17 +19,32 @@ public class BoardGame extends Application {
     private Group root, gameBoard;
     private Scene scene;
     private StackPane uiLayout;
-    VBox uiContainer;
-    Insets uiPadding;
-    ImageView boardGameBackPlate;
-    TextFlow infoOverlay;
-    Image splashScreen, helpLayer, legalLayer, creditLayer, scoreLayer;
-    Button gameButton, helpButton, legalButton, creditButton, scoreButton;
+    private VBox uiContainer;
+    private Insets uiPadding;
+    private ImageView boardGameBackPlate;
+    private TextFlow infoOverlay;
+    private Image splashScreen;
+    private Image helpLayer;
+    private Image legalLayer;
+    private Image creditLayer;
+    private Image scoreLayer;
+    private Button gameButton;
+    private Button helpButton;
+    private Button legalButton;
+    private Button creditButton;
+    private Button scoreButton;
     @Override
     public void start(Stage stage) {
         createBoardGameNodes();
         addNodesToSceneGraph();
         stage.setScene(scene);
+
+        gameButton.setOnAction(actionEvent-> System.out.println("Starting Game"));
+        helpButton.setOnAction(actionEvent -> System.out.println("Game Instructions"));
+        scoreButton.setOnAction(actionEvent -> System.out.println("High Scores"));
+        legalButton.setOnAction(actionEvent -> System.out.println("Copyrights"));
+        creditButton.setOnAction(actionEvent -> System.out.println("Credits"));
+
         stage.show();
     }
 
