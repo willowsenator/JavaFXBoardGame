@@ -17,11 +17,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class BoardGame extends Application {
-    private Group root, gameBoard;
+    private Group root;
+    private Group gameBoard;
     private Scene scene;
     private StackPane uiLayout;
     private VBox uiContainer;
-    private Insets uiPadding;
     private ImageView boardGameBackPlate;
     private TextFlow infoOverlay;
     private Image splashScreen;
@@ -66,7 +66,7 @@ public class BoardGame extends Application {
         uiLayout.setBackground(Background.EMPTY);
         uiContainer = new VBox();
         uiContainer.setAlignment(Pos.TOP_RIGHT);
-        uiPadding = new Insets(0, 0, 10, 10);
+        var uiPadding = new Insets(0, 0, 10, 10);
         uiContainer.setPadding(uiPadding);
         gameButton = new Button();
         gameButton.setText("Start Game");
