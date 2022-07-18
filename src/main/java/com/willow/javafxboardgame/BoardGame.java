@@ -36,6 +36,9 @@ public class BoardGame extends Application {
     private Button scoreButton;
     @Override
     public void start(Stage stage) {
+        loadImageAssets();
+        createTextAssets();
+        createBoardGameNodes();
         createBoardGameNodes();
         addNodesToSceneGraph();
         stage.initStyle(StageStyle.TRANSPARENT);
@@ -56,7 +59,7 @@ public class BoardGame extends Application {
         uiLayout.getChildren().add(boardGameBackPlate);
         uiLayout.getChildren().add(infoOverlay);
         uiLayout.getChildren().add(uiContainer);
-        uiContainer.getChildren().addAll(gameButton, helpButton,legalButton, creditButton, scoreButton);
+        uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
     }
 
     private void createBoardGameNodes() {
@@ -83,6 +86,16 @@ public class BoardGame extends Application {
         creditButton = new Button();
         creditButton.setText("Game Credits");
     }
+
+    private void loadImageAssets() {
+        throw new UnsupportedOperationException("Not supported yet");
+    }
+
+    private void createTextAssets() {
+        throw new UnsupportedOperationException("Not supported yet");
+    }
+
+
 
     public static void main(String[] args) {
         launch();
