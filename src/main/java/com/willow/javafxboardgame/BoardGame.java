@@ -53,6 +53,8 @@ public class BoardGame extends Application {
     private void addNodesToSceneGraph() {
         root.getChildren().add(gameBoard);
         root.getChildren().add(uiLayout);
+        uiLayout.getChildren().add(boardGameBackPlate);
+        uiLayout.getChildren().add(infoOverlay);
         uiLayout.getChildren().add(uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton,legalButton, creditButton, scoreButton);
     }
@@ -64,6 +66,8 @@ public class BoardGame extends Application {
         scene.setFill(Color.TRANSPARENT);
         uiLayout = new StackPane();
         uiLayout.setBackground(Background.EMPTY);
+        boardGameBackPlate = new ImageView();
+        infoOverlay = new TextFlow();
         uiContainer = new VBox();
         uiContainer.setAlignment(Pos.TOP_RIGHT);
         var uiPadding = new Insets(0, 0, 10, 10);
