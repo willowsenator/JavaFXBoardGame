@@ -16,6 +16,8 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.Objects;
+
 public class BoardGame extends Application {
     private Group root;
     private Group gameBoard;
@@ -65,34 +67,41 @@ public class BoardGame extends Application {
     private void createBoardGameNodes() {
         root = new Group();
         gameBoard = new Group();
-        scene = new Scene(root, 640, 400);
+        scene = new Scene(root, 1280, 640);
         scene.setFill(Color.TRANSPARENT);
         uiLayout = new StackPane();
         uiLayout.setBackground(Background.EMPTY);
         boardGameBackPlate = new ImageView();
+        boardGameBackPlate.setImage(splashScreen);
         infoOverlay = new TextFlow();
-        uiContainer = new VBox();
+        uiContainer = new VBox(10);
         uiContainer.setAlignment(Pos.TOP_RIGHT);
-        var uiPadding = new Insets(0, 0, 10, 10);
+        var uiPadding = new Insets(16);
         uiContainer.setPadding(uiPadding);
         gameButton = new Button();
         gameButton.setText("Start Game");
+        gameButton.setMaxWidth(125);
         helpButton = new Button();
         helpButton.setText("Game Rules");
+        helpButton.setMaxWidth(125);
         scoreButton = new Button();
         scoreButton.setText("High Scores");
+        scoreButton.setMaxWidth(125);
         legalButton = new Button();
         legalButton.setText("Disclaimers");
+        legalButton.setMaxWidth(125);
         creditButton = new Button();
         creditButton.setText("Game Credits");
+        creditButton.setMaxWidth(125);
     }
 
     private void loadImageAssets() {
-        throw new UnsupportedOperationException("Not supported yet");
+
+        splashScreen = new Image(Objects.requireNonNull(getClass().getResource("/images/welcome.png")).toString(),
+                1280, 640, true, false, true);
     }
 
     private void createTextAssets() {
-        throw new UnsupportedOperationException("Not supported yet");
     }
 
 
