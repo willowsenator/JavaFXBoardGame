@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -18,7 +20,6 @@ import javafx.stage.StageStyle;
 import java.util.Objects;
 
 public class BoardGame extends Application {
-    private BackgroundImage uiBackgroundImage;
     private Background uiBackground;
     private Group root;
     private Group gameBoard;
@@ -32,7 +33,6 @@ public class BoardGame extends Application {
     private Image legalLayer;
     private Image creditLayer;
     private Image scoreLayer;
-    private Image backPlate;
     private Button gameButton;
     private Button helpButton;
     private Button legalButton;
@@ -72,6 +72,7 @@ public class BoardGame extends Application {
         uiLayout.getChildren().add(infoOverlay);
         uiLayout.getChildren().add(uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
+        infoOverlay.getChildren().addAll(playText, moreText);
     }
 
     private void createBoardGameNodes() {
@@ -80,11 +81,15 @@ public class BoardGame extends Application {
         scene = new Scene(root, 1280, 640);
         scene.setFill(Color.TRANSPARENT);
         uiLayout = new StackPane();
+        uiLayout.setPrefWidth(1280);
+        uiLayout.setPrefHeight(640);
         uiLayout.setBackground(Background.EMPTY);
         uiLayout.setBackground(uiBackground);
         boardGameBackPlate = new ImageView();
         boardGameBackPlate.setImage(splashScreen);
         infoOverlay = new TextFlow();
+        infoOverlay.setTranslateX(240);
+        infoOverlay.setTranslateY(420);
         uiContainer = new VBox(10);
         uiContainer.setAlignment(Pos.TOP_RIGHT);
         var uiPadding = new Insets(16);
@@ -108,7 +113,7 @@ public class BoardGame extends Application {
 
     private void loadImageAssets() {
 
-        backPlate = new Image(Objects.requireNonNull(getClass().getResource("/images/backplate.png").toString()),
+        Image backPlate = new Image(Objects.requireNonNull(getClass().getResource("/images/backplate.png")).toString(),
                 1280, 640, true, false, true);
         splashScreen = new Image(Objects.requireNonNull(getClass().getResource("/images/welcome.png")).toString(),
                 1280, 640, true, false, true);
@@ -121,16 +126,21 @@ public class BoardGame extends Application {
         scoreLayer = new Image(Objects.requireNonNull(getClass().getResource("/images/high-scores.png")).toString(),
                 1280, 640, true, false, true);
 
-        uiBackgroundImage = new BackgroundImage(backPlate, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+        BackgroundImage uiBackgroundImage = new BackgroundImage(backPlate, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         uiBackground = new Background(uiBackgroundImage);
     }
 
     private void createTextAssets() {
         playText = new Text("Press the Start Game Button to Start!\n");
-        moreText = new Text("Use other buttons for instructions, copyrights, credits and high scores.");
+        playText.setFill(Color.WHITE);
+        playText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
+        moreText = new Text("Use other buttons for instructions, \ncopyrights, credits and high scores.");
+        moreText.setFill(Color.WHITE);
+        moreText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
         helpText = new Text("To play game roll dice, advance gamepiece, follow gameboard instruction.");
         cardText = new Text("If you land on square that requires card draw it will appear in UI area.");
+        copyrightText = new Text("Copyright 2022 Omar Fernando Moreno Benito, All Rights Reserved. \n");
         creditText = new Text("Digital Imaging, 3D Modeling, 3D Texture Mapping, by Omar Fernando Moreno Benito. \n");
         codeText = new Text("Game Design, User Interface Design, Java Programming by Omar Fernando Moreno Benito.");
     }
