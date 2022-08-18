@@ -27,12 +27,16 @@ public class BoardGame extends Application {
     private StackPane uiLayout;
     private VBox uiContainer;
     private ImageView boardGameBackPlate;
+
+    private ImageView logoLayer;
     private TextFlow infoOverlay;
     private Image splashScreen;
     private Image helpLayer;
     private Image legalLayer;
     private Image creditLayer;
     private Image scoreLayer;
+
+    private Image alphaLogo;
     private Button gameButton;
     private Button helpButton;
     private Button legalButton;
@@ -46,17 +50,17 @@ public class BoardGame extends Application {
     private Text copyrightText;
     private Text creditText;
     private Text codeText;
+
     @Override
     public void start(Stage stage) {
         loadImageAssets();
         createTextAssets();
         createBoardGameNodes();
-        createBoardGameNodes();
         addNodesToSceneGraph();
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setScene(scene);
 
-        gameButton.setOnAction(actionEvent-> System.out.println("Starting Game"));
+        gameButton.setOnAction(actionEvent -> System.out.println("Starting Game"));
         helpButton.setOnAction(actionEvent -> System.out.println("Game Instructions"));
         scoreButton.setOnAction(actionEvent -> System.out.println("High Scores"));
         legalButton.setOnAction(actionEvent -> System.out.println("Copyrights"));
@@ -66,11 +70,8 @@ public class BoardGame extends Application {
     }
 
     private void addNodesToSceneGraph() {
-        root.getChildren().add(gameBoard);
-        root.getChildren().add(uiLayout);
-        uiLayout.getChildren().add(boardGameBackPlate);
-        uiLayout.getChildren().add(infoOverlay);
-        uiLayout.getChildren().add(uiContainer);
+        root.getChildren().addAll(gameBoard, uiLayout);
+        uiLayout.getChildren().addAll(logoLayer, boardGameBackPlate, infoOverlay, uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
         infoOverlay.getChildren().addAll(playText, moreText);
     }
@@ -87,6 +88,12 @@ public class BoardGame extends Application {
         uiLayout.setBackground(uiBackground);
         boardGameBackPlate = new ImageView();
         boardGameBackPlate.setImage(splashScreen);
+        logoLayer = new ImageView();
+        logoLayer.setImage(alphaLogo);
+        logoLayer.setScaleX(0.8);
+        logoLayer.setScaleY(0.8);
+        logoLayer.setTranslateX(-75);
+        logoLayer.setTranslateY(-170);
         infoOverlay = new TextFlow();
         infoOverlay.setTranslateX(240);
         infoOverlay.setTranslateY(420);
@@ -113,8 +120,8 @@ public class BoardGame extends Application {
 
     private void loadImageAssets() {
 
-        Image backPlate = new Image(Objects.requireNonNull(getClass().getResource("/images/backplate.png")).toString(),
-                1280, 640, true, false, true);
+        Image backPlate = new Image(Objects.requireNonNull(getClass().getResource("/images/backplate.png"))
+                .toString(), 1280, 640, true, false, true);
         splashScreen = new Image(Objects.requireNonNull(getClass().getResource("/images/welcome.png")).toString(),
                 1280, 640, true, false, true);
         helpLayer = new Image(Objects.requireNonNull(getClass().getResource("/images/instructions.png")).toString(),
@@ -125,9 +132,12 @@ public class BoardGame extends Application {
                 1280, 640, true, false, true);
         scoreLayer = new Image(Objects.requireNonNull(getClass().getResource("/images/high-scores.png")).toString(),
                 1280, 640, true, false, true);
+        alphaLogo = new Image(Objects.requireNonNull(getClass().getResource("/images/alphalogo.png")).toString(),
+                1280, 640, true, false, true);
 
-        BackgroundImage uiBackgroundImage = new BackgroundImage(backPlate, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+        BackgroundImage uiBackgroundImage = new BackgroundImage(backPlate, BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+
         uiBackground = new Background(uiBackgroundImage);
     }
 
@@ -144,7 +154,6 @@ public class BoardGame extends Application {
         creditText = new Text("Digital Imaging, 3D Modeling, 3D Texture Mapping, by Omar Fernando Moreno Benito. \n");
         codeText = new Text("Game Design, User Interface Design, Java Programming by Omar Fernando Moreno Benito.");
     }
-
 
 
     public static void main(String[] args) {
