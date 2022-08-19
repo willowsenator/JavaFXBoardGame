@@ -57,7 +57,8 @@ public class BoardGame extends Application {
         createTextAssets();
         createBoardGameNodes();
         addNodesToSceneGraph();
-        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.initStyle(StageStyle.DECORATED);
+        stage.setTitle("BoardGame (JavaFX Game)");
         stage.setScene(scene);
 
         gameButton.setOnAction(actionEvent -> System.out.println("Starting Game"));
@@ -142,17 +143,27 @@ public class BoardGame extends Application {
     }
 
     private void createTextAssets() {
-        playText = new Text("Press the Start Game Button to Start!\n");
+        playText = new Text("Press the PLAY GAME Button to Start!\n");
         playText.setFill(Color.WHITE);
         playText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
-        moreText = new Text("Use other buttons for instructions, \ncopyrights, credits and high scores.");
+        moreText = new Text("Use other buttons for instructions, \ncopyrights, credits and scores.");
         moreText.setFill(Color.WHITE);
-        moreText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
-        helpText = new Text("To play game roll dice, advance gamepiece, follow gameboard instruction.");
-        cardText = new Text("If you land on square that requires card draw it will appear in UI area.");
-        copyrightText = new Text("Copyright 2022 Omar Fernando Moreno Benito, All Rights Reserved. \n");
-        creditText = new Text("Digital Imaging, 3D Modeling, 3D Texture Mapping, by Omar Fernando Moreno Benito. \n");
-        codeText = new Text("Game Design, User Interface Design, Java Programming by Omar Fernando Moreno Benito.");
+        moreText.setFont(Font.font("Helvetica", FontPosture.ITALIC, 50));
+        helpText = new Text("To play game roll the dice, advance\ngame piece and follow game board\ninstruction.");
+        helpText.setFill(Color.GREEN);
+        helpText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
+        cardText = new Text("If you land on square\nthat requires you draw a card it will\nappear in the floating UI text area.");
+        cardText.setFill(Color.GREEN);
+        cardText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
+        copyrightText = new Text("Copyright 2022 Omar Fernando Moreno Benito.\nAll Rights Reserved. \n");
+        copyrightText.setFill(Color.PURPLE);
+        copyrightText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
+        creditText = new Text("Digital Imaging, 3D Modeling, 3D\nTexture Mapping, by Omar Fernando Moreno Benito. \n");
+        creditText.setFill(Color.BLUE);
+        creditText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
+        codeText = new Text("Game Design, User Interface Design, \nJava Programming by Omar Fernando Moreno Benito.");
+        codeText.setFill(Color.BLUE);
+        codeText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
     }
 
 
