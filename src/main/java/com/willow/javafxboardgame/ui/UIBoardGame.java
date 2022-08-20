@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -53,6 +54,7 @@ public class UIBoardGame {
     private static Text creditText;
     private static Text codeText;
     private static DropShadow dropShadow;
+    private static ColorAdjust colorAdjust;
 
     public static Scene init() {
         createSpecialEffects();
@@ -71,6 +73,9 @@ public class UIBoardGame {
         dropShadow.setOffsetX(3);
         dropShadow.setOffsetY(3);
         dropShadow.setColor(Color.DARKGRAY);
+
+        colorAdjust = new ColorAdjust();
+        colorAdjust.setHue(0.4);
     }
 
     private static void addEvents() {
@@ -91,6 +96,8 @@ public class UIBoardGame {
         infoOverlay.setTranslateY(420);
         uiLayout.setBackground(Background.EMPTY);
         boardGameBackPlate.setImage(creditLayer);
+        logoLayer.setEffect(colorAdjust);
+        colorAdjust.setHue(-0.9);
     }
 
     private static void showCopyrights() {
@@ -100,6 +107,8 @@ public class UIBoardGame {
         infoOverlay.setTranslateY(430);
         uiLayout.setBackground(Background.EMPTY);
         boardGameBackPlate.setImage(legalLayer);
+        logoLayer.setEffect(colorAdjust);
+        colorAdjust.setHue(-0.4);
     }
 
     private static void showStartScreen() {
@@ -118,6 +127,8 @@ public class UIBoardGame {
         infoOverlay.setTranslateY(400);
         uiLayout.setBackground(Background.EMPTY);
         boardGameBackPlate.setImage(helpLayer);
+        logoLayer.setEffect(colorAdjust);
+        colorAdjust.setHue(0.4);
     }
 
     private static void addNodesToSceneGraph() {
