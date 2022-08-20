@@ -15,6 +15,8 @@ public class GameControllerHelper {
             case DOWN, S -> down = true;
             case LEFT, A -> left = true;
             case RIGHT, D -> right = true;
+            default -> {
+            }
         }
     };
 
@@ -24,6 +26,9 @@ public class GameControllerHelper {
             case DOWN, S -> down = false;
             case LEFT, A -> left = false;
             case RIGHT, D -> right = false;
+            default -> {
+
+            }
         }
     };
 
