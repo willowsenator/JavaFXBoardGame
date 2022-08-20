@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -51,22 +52,74 @@ public class UIBoardGame {
     private static Text copyrightText;
     private static Text creditText;
     private static Text codeText;
+    private static DropShadow dropShadow;
 
-    private static GameController controller;
-    public static Scene init(){
-        controller = new GameController();
+    public static Scene init() {
+        createSpecialEffects();
         loadImageAssets();
         createTextAssets();
         createBoardGameNodes();
         addNodesToSceneGraph();
-        gameButton.setOnAction(actionEvent -> controller.playGame());
-        helpButton.setOnAction(actionEvent -> controller.gameInstructions());
-        scoreButton.setOnAction(actionEvent -> controller.highScores());
-        legalButton.setOnAction(actionEvent -> controller.copyrights());
-        creditButton.setOnAction(actionEvent -> controller.credits());
+        addEvents();
 
         return scene;
     }
+
+    private static void createSpecialEffects() {
+        dropShadow = new DropShadow();
+        dropShadow.setRadius(0.3);
+        dropShadow.setOffsetX(3);
+        dropShadow.setOffsetY(3);
+        dropShadow.setColor(Color.DARKGRAY);
+    }
+
+    private static void addEvents() {
+        gameButton.setOnAction(actionEvent -> showStartScreen());
+        helpButton.setOnAction(actionEvent -> showInstructions());
+        legalButton.setOnAction(actionEvent -> showCopyrights());
+        creditButton.setOnAction(actionEvent -> showCredits());
+        scoreButton.setOnAction(actionEvent -> System.out.println("High Scores"));
+
+        scene.setOnKeyPressed(GameController.keyPressed);
+        scene.setOnKeyReleased(GameController.keyReleased);
+    }
+
+    private static void showCredits() {
+        infoOverlay.getChildren().clear();
+        infoOverlay.getChildren().addAll(creditText, codeText);
+        infoOverlay.setTranslateX(240);
+        infoOverlay.setTranslateY(420);
+        uiLayout.setBackground(Background.EMPTY);
+        boardGameBackPlate.setImage(creditLayer);
+    }
+
+    private static void showCopyrights() {
+        infoOverlay.getChildren().clear();
+        infoOverlay.getChildren().addAll(copyrightText);
+        infoOverlay.setTranslateX(200);
+        infoOverlay.setTranslateY(430);
+        uiLayout.setBackground(Background.EMPTY);
+        boardGameBackPlate.setImage(legalLayer);
+    }
+
+    private static void showStartScreen() {
+        infoOverlay.getChildren().clear();
+        infoOverlay.getChildren().addAll(playText, moreText);
+        infoOverlay.setTranslateX(240);
+        infoOverlay.setTranslateY(420);
+        uiLayout.setBackground(uiBackground);
+        boardGameBackPlate.setImage(splashScreen);
+    }
+
+    private static void showInstructions() {
+        infoOverlay.getChildren().clear();
+        infoOverlay.getChildren().addAll(helpText, cardText);
+        infoOverlay.setTranslateX(130);
+        infoOverlay.setTranslateY(400);
+        uiLayout.setBackground(Background.EMPTY);
+        boardGameBackPlate.setImage(helpLayer);
+    }
+
     private static void addNodesToSceneGraph() {
         root.getChildren().addAll(gameBoard, uiLayout);
         uiLayout.getChildren().addAll(logoLayer, boardGameBackPlate, infoOverlay, uiContainer);
@@ -121,20 +174,15 @@ public class UIBoardGame {
         Image backPlate = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/backplate.png"))
                 .toString(), 1280, 640, true, false, true);
         splashScreen = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/welcome.png")).toString(),
-                1280, 640, true, false, true);
-        helpLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/instructions.png")).toString(),
-                1280, 640, true, false, true);
-        legalLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/copyrights.png")).toString(),
-                1280, 640, true, false, true);
-        creditLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/credits.png")).toString(),
-                1280, 640, true, false, true);
-        scoreLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/high-scores.png")).toString(),
-                1280, 640, true, false, true);
-        alphaLogo = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/alphalogo.png")).toString(),
-                1280, 640, true, false, true);
+                true);
+        helpLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/instructions.png")).toString(), true);
+        legalLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/copyrights.png")).toString(), true);
+        creditLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/credits.png")).toString(), true);
+        scoreLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/high-scores.png")).toString(), true);
+        alphaLogo = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/alphalogo.png")).toString(), true);
 
         BackgroundImage uiBackgroundImage = new BackgroundImage(backPlate, BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
 
         uiBackground = new Background(uiBackgroundImage);
     }
@@ -142,24 +190,37 @@ public class UIBoardGame {
     private static void createTextAssets() {
         playText = new Text("Press the PLAY GAME Button to Start!\n");
         playText.setFill(Color.WHITE);
-        playText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
+        playText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
+        playText.setEffect(dropShadow);
+
         moreText = new Text("Use other buttons for instructions, \ncopyrights, credits and scores.");
         moreText.setFill(Color.WHITE);
-        moreText.setFont(Font.font("Helvetica", FontPosture.ITALIC, 50));
-        helpText = new Text("To play game roll the dice, advance\ngame piece and follow game board\ninstruction.");
+        moreText.setFont(Font.font("Helvetica", FontPosture.ITALIC, 40));
+        moreText.setEffect(dropShadow);
+
+        helpText = new Text("To play game roll the dice, advance game piece\n and follow game board instruction. ");
         helpText.setFill(Color.GREEN);
-        helpText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
-        cardText = new Text("If you land on square\nthat requires you draw a card it will\nappear in the floating UI text area.");
+        helpText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
+        helpText.setEffect(dropShadow);
+
+        cardText = new Text("If you land\non square that requires you draw a card it will \nappear in the floating UI text area.");
         cardText.setFill(Color.GREEN);
-        cardText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
+        cardText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
+        cardText.setEffect(dropShadow);
+
         copyrightText = new Text("Copyright 2022 Omar Fernando Moreno Benito.\nAll Rights Reserved. \n");
         copyrightText.setFill(Color.PURPLE);
-        copyrightText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
-        creditText = new Text("Digital Imaging, 3D Modeling, 3D\nTexture Mapping, by Omar Fernando Moreno Benito. \n");
+        copyrightText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
+        copyrightText.setEffect(dropShadow);
+
+        creditText = new Text("Digital Imaging, 3D Modeling, 3D Texture Mapping,\n by Omar Fernando Moreno Benito. \n");
         creditText.setFill(Color.BLUE);
-        creditText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
+        creditText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
+        creditText.setEffect(dropShadow);
+
         codeText = new Text("Game Design, User Interface Design, \nJava Programming by Omar Fernando Moreno Benito.");
         codeText.setFill(Color.BLUE);
-        codeText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 50));
+        codeText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
+        codeText.setEffect(dropShadow);
     }
 }
