@@ -1,9 +1,9 @@
-package com.willow.javafxboardgame.controller;
+package com.willow.javafxboardgame.helper;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
-public class GameController {
+public class GameControllerHelper {
 
     private static boolean up;
     private static boolean down;
@@ -27,6 +27,6 @@ public class GameController {
         }
     };
 
-    private GameController() {
+    private GameControllerHelper() {
     }
 }

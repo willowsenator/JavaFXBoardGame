@@ -1,6 +1,6 @@
 package com.willow.javafxboardgame.ui;
 
-import com.willow.javafxboardgame.controller.GameController;
+import com.willow.javafxboardgame.helper.GameControllerHelper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -80,8 +80,8 @@ public class UIBoardGame {
         creditButton.setOnAction(actionEvent -> showCredits());
         scoreButton.setOnAction(actionEvent -> System.out.println("High Scores"));
 
-        scene.setOnKeyPressed(GameController.keyPressed);
-        scene.setOnKeyReleased(GameController.keyReleased);
+        scene.setOnKeyPressed(GameControllerHelper.keyPressed);
+        scene.setOnKeyReleased(GameControllerHelper.keyReleased);
     }
 
     private static void showCredits() {
