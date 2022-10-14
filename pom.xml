@@ -6,7 +6,7 @@
 
     <groupId>com.willow</groupId>
     <artifactId>JavaFXBoardGame</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.1-alpha</version>
     <name>JavaFXBoardGame</name>
 
     <properties>
