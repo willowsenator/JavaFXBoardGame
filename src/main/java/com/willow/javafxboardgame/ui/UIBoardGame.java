@@ -5,6 +5,7 @@ import com.willow.javafxboardgame.helper.GameControllerHelper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.effect.ColorAdjust;
@@ -12,10 +13,12 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -61,6 +64,8 @@ public class UIBoardGame {
     private static Text codeText;
     private static DropShadow dropShadow;
     private static ColorAdjust colorAdjust;
+
+    private static PerspectiveCamera camera;
 
     public static Scene init() {
         createSpecialEffects();
@@ -131,7 +136,7 @@ public class UIBoardGame {
         infoOverlay.getChildren().addAll(helpText, cardText);
         infoOverlay.setTranslateX(130);
         infoOverlay.setTranslateY(400);
-        uiLayout.setBackground(Background.EMPTY);
+        uiLayout.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         boardGameBackPlate.setImage(helpLayer);
         logoLayer.setEffect(colorAdjust);
         colorAdjust.setHue(0.4);
@@ -147,8 +152,13 @@ public class UIBoardGame {
     private static void createBoardGameNodes() {
         root = new Group();
         gameBoard = new Group();
+        camera = new PerspectiveCamera();
+        camera.setTranslateZ(0);
+        camera.setNearClip(0.1);
+        camera.setFarClip(5000);
         scene = new Scene(root, 1280, 640);
-        scene.setFill(Color.TRANSPARENT);
+        scene.setFill(Color.BLACK);
+        scene.setCamera(camera);
         uiLayout = new StackPane();
         uiLayout.setPrefWidth(1280);
         uiLayout.setPrefHeight(640);
