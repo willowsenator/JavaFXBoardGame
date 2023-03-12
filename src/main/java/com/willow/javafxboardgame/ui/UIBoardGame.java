@@ -105,7 +105,7 @@ public class UIBoardGame {
         infoOverlay.getChildren().addAll(creditText, codeText);
         infoOverlay.setTranslateX(240);
         infoOverlay.setTranslateY(420);
-        uiLayout.setBackground(Background.EMPTY);
+        uiLayout.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         boardGameBackPlate.setImage(creditLayer);
         logoLayer.setEffect(colorAdjust);
         colorAdjust.setHue(-0.9);
@@ -116,19 +116,15 @@ public class UIBoardGame {
         infoOverlay.getChildren().addAll(copyrightText);
         infoOverlay.setTranslateX(200);
         infoOverlay.setTranslateY(430);
-        uiLayout.setBackground(Background.EMPTY);
+        uiLayout.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         boardGameBackPlate.setImage(legalLayer);
         logoLayer.setEffect(colorAdjust);
         colorAdjust.setHue(-0.4);
     }
 
     private static void showStartScreen() {
-        infoOverlay.getChildren().clear();
-        infoOverlay.getChildren().addAll(playText, moreText);
-        infoOverlay.setTranslateX(240);
-        infoOverlay.setTranslateY(420);
-        uiLayout.setBackground(uiBackground);
-        boardGameBackPlate.setImage(splashScreen);
+        uiLayout.setVisible(false);
+        camera.setTranslateZ(-1000);
     }
 
     private static void showInstructions() {
