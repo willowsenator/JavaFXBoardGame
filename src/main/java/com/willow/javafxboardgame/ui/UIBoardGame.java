@@ -23,11 +23,16 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Box;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.scene.transform.Rotate;
 
 import java.util.Objects;
 
@@ -71,6 +76,8 @@ public class UIBoardGame {
 
     private static PointLight light;
     private static Sphere sphere;
+    private static Box box;
+    private static Cylinder pole;
 
     public static Scene init() {
         createSpecialEffects();
@@ -129,7 +136,8 @@ public class UIBoardGame {
 
     private static void showStartScreen() {
         uiLayout.setVisible(false);
-        camera.setTranslateZ(-1000);
+        camera.setTranslateZ(-500);
+        camera.setTranslateY(-300);
     }
 
     private static void showInstructions() {
@@ -145,7 +153,7 @@ public class UIBoardGame {
 
     private static void addNodesToSceneGraph() {
         root.getChildren().addAll(gameBoard, uiLayout);
-        gameBoard.getChildren().add(sphere);
+        gameBoard.getChildren().addAll(sphere, box, pole);
         uiLayout.getChildren().addAll(logoLayer, boardGameBackPlate, infoOverlay, uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
         infoOverlay.getChildren().addAll(playText, moreText);
@@ -164,7 +172,21 @@ public class UIBoardGame {
         light = new PointLight(Color.WHITE);
         light.setTranslateY(-25);
         light.getScope().add(sphere);
-        sphere = new Sphere(100);
+        sphere = new Sphere(100, 12);
+        sphere.setRotationAxis(Rotate.X_AXIS);
+        sphere.setRotate(90);
+        sphere.setDrawMode(DrawMode.FILL);
+        sphere.setCullFace(CullFace.BACK);
+        box = new Box(100, 100, 100);
+        box.setTranslateX(500);
+        box.setRotationAxis(Rotate.X_AXIS);
+        box.setRotate(45);
+        box.setDrawMode(DrawMode.FILL);
+        box.setCullFace(CullFace.BACK);
+        pole = new Cylinder(50, 250, 24);
+        pole.setTranslateX(250);
+        pole.setDrawMode(DrawMode.FILL);
+        pole.setCullFace(CullFace.BACK);
         uiLayout = new StackPane();
         uiLayout.setPrefWidth(1280);
         uiLayout.setPrefHeight(640);
