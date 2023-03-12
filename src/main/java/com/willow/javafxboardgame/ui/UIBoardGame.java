@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.effect.ColorAdjust;
@@ -22,6 +23,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Sphere;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
@@ -66,6 +68,9 @@ public class UIBoardGame {
     private static ColorAdjust colorAdjust;
 
     private static PerspectiveCamera camera;
+
+    private static PointLight light;
+    private static Sphere sphere;
 
     public static Scene init() {
         createSpecialEffects();
@@ -140,6 +145,7 @@ public class UIBoardGame {
 
     private static void addNodesToSceneGraph() {
         root.getChildren().addAll(gameBoard, uiLayout);
+        gameBoard.getChildren().add(sphere);
         uiLayout.getChildren().addAll(logoLayer, boardGameBackPlate, infoOverlay, uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
         infoOverlay.getChildren().addAll(playText, moreText);
@@ -155,6 +161,10 @@ public class UIBoardGame {
         scene = new Scene(root, 1280, 640);
         scene.setFill(Color.BLACK);
         scene.setCamera(camera);
+        light = new PointLight(Color.WHITE);
+        light.setTranslateY(-25);
+        light.getScope().add(sphere);
+        sphere = new Sphere(100);
         uiLayout = new StackPane();
         uiLayout.setPrefWidth(1280);
         uiLayout.setPrefHeight(640);
