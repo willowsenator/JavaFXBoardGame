@@ -142,8 +142,12 @@ public class UIBoardGame {
 
     private static void showStartScreen() {
         uiLayout.setVisible(false);
-        camera.setTranslateZ(-500);
-        camera.setTranslateY(-300);
+        camera.setTranslateZ(0);
+        camera.setTranslateY(-500);
+        camera.setTranslateX(-500);
+        camera.setRotationAxis(Rotate.X_AXIS);
+        camera.setRotate(-45);
+        camera.setFieldOfView(1);
     }
 
     private static void showInstructions() {
@@ -159,7 +163,7 @@ public class UIBoardGame {
 
     private static void addNodesToSceneGraph() {
         root.getChildren().addAll(gameBoard, uiLayout);
-        gameBoard.getChildren().addAll(sphere, box, pole);
+        gameBoard.getChildren().add(box);
         uiLayout.getChildren().addAll(logoLayer, boardGameBackPlate, infoOverlay, uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
         infoOverlay.getChildren().addAll(playText, moreText);
@@ -184,20 +188,10 @@ public class UIBoardGame {
         phongMaterial.setDiffuseMap(diffuseMap);
         phongMaterial.setSpecularMap(specularMap);
         phongMaterial.setSelfIlluminationMap(glowMap);
-        sphere = new Sphere(100, 24);
-        sphere.setRotationAxis(Rotate.Y_AXIS);
-        sphere.setRotate(5);
-        sphere.setMaterial(phongMaterial);
-        box = new Box(100, 100, 100);
-        box.setMaterial(phongMaterial);
-        box.setTranslateX(500);
-        box.setRotationAxis(Rotate.X_AXIS);
+        box = new Box(150, 5, 150);
+        box.setRotationAxis(Rotate.Y_AXIS);
         box.setRotate(45);
-        pole = new Cylinder(50, 250, 24);
-        pole.setMaterial(phongMaterial);
-        pole.setTranslateX(250);
-        pole.setRotationAxis(Rotate.Y_AXIS);
-        pole.setRotate(45);
+        box.setMaterial(phongMaterial);
         uiLayout = new StackPane();
         uiLayout.setPrefWidth(1280);
         uiLayout.setPrefHeight(640);
@@ -245,13 +239,13 @@ public class UIBoardGame {
         legalLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/copyrights.png")).toString(), true);
         creditLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/credits.png")).toString(), true);
         scoreLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/high-scores.png")).toString(), true);
-        diffuseMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/beachball5color256px.png")).toString(),
+        diffuseMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/gameboardsquare.png")).toString(),
                 256, 256, true, true, true);
-        specularMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/beachball3grayscale256px.png")).toString(),
+        specularMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/gameboard3grayscale256px.png")).toString(),
                 256, 256, true, true, true);
-        glowMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/beachball2grayscale256px.png")).toString(),
+        glowMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/gameboard2grayscale256px.png")).toString(),
                 256, 256, true, true, true);
-        bumpMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/beachball3grayscale256px.png")).toString(),
+        bumpMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/gameboard3grayscale256px.png")).toString(),
                 256, 256, true, true, true);
         alphaLogo = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/alphalogo.png")).toString(), true);
 
