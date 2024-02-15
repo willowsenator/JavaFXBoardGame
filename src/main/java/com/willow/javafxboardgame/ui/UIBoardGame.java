@@ -55,6 +55,11 @@ public class UIBoardGame {
 
     private static Image alphaLogo;
 
+    private static Image diffuseMap;
+    private static Image specularMap;
+    private static Image glowMap;
+    private static Image bumpMap;
+
     private static Button gameButton;
     private static Button helpButton;
     private static Button legalButton;
@@ -92,6 +97,7 @@ public class UIBoardGame {
 
     private static void createSpecialEffects() {
         dropShadow = new DropShadow();
+        dropShadow.setRadius(0.3);
         dropShadow.setRadius(0.3);
         dropShadow.setOffsetX(3);
         dropShadow.setOffsetY(3);
@@ -172,10 +178,15 @@ public class UIBoardGame {
         light = new PointLight(Color.WHITE);
         light.setTranslateY(-25);
         light.getScope().add(sphere);
-        phongMaterial = new PhongMaterial(Color.GOLD);
-        phongMaterial.setSpecularColor(Color.YELLOW);
-        phongMaterial.setSpecularPower(100);
-        sphere = new Sphere(100, 12);
+        phongMaterial = new PhongMaterial(Color.WHITE);
+        phongMaterial.setSpecularColor(Color.WHITE);
+        phongMaterial.setSpecularPower(20);
+        phongMaterial.setDiffuseMap(diffuseMap);
+        phongMaterial.setSpecularMap(specularMap);
+        phongMaterial.setSelfIlluminationMap(glowMap);
+        sphere = new Sphere(100, 24);
+        sphere.setRotationAxis(Rotate.Y_AXIS);
+        sphere.setRotate(5);
         sphere.setMaterial(phongMaterial);
         box = new Box(100, 100, 100);
         box.setMaterial(phongMaterial);
@@ -185,6 +196,8 @@ public class UIBoardGame {
         pole = new Cylinder(50, 250, 24);
         pole.setMaterial(phongMaterial);
         pole.setTranslateX(250);
+        pole.setRotationAxis(Rotate.Y_AXIS);
+        pole.setRotate(45);
         uiLayout = new StackPane();
         uiLayout.setPrefWidth(1280);
         uiLayout.setPrefHeight(640);
@@ -232,6 +245,14 @@ public class UIBoardGame {
         legalLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/copyrights.png")).toString(), true);
         creditLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/credits.png")).toString(), true);
         scoreLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/high-scores.png")).toString(), true);
+        diffuseMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/beachball5color256px.png")).toString(),
+                256, 256, true, true, true);
+        specularMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/beachball3grayscale256px.png")).toString(),
+                256, 256, true, true, true);
+        glowMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/beachball2grayscale256px.png")).toString(),
+                256, 256, true, true, true);
+        bumpMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/beachball3grayscale256px.png")).toString(),
+                256, 256, true, true, true);
         alphaLogo = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/alphalogo.png")).toString(), true);
 
         BackgroundImage uiBackgroundImage = new BackgroundImage(backPlate, BackgroundRepeat.NO_REPEAT,
