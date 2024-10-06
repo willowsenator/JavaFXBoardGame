@@ -249,44 +249,65 @@ public class UIBoardGame {
                 256, 256, true, true, true);
         alphaLogo = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/alphalogo.png")).toString(), true);
 
-        BackgroundImage uiBackgroundImage = new BackgroundImage(backPlate, BackgroundRepeat.NO_REPEAT,
+        var uiBackgroundImage = new BackgroundImage(backPlate, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
 
         uiBackground = new Background(uiBackgroundImage);
     }
 
     private static void createTextAssets() {
-        playText = new Text("Press the PLAY GAME Button to Start!\n");
+        playText = new Text("""
+        Press the PLAY GAME Button to Start!
+        """);
         playText.setFill(Color.WHITE);
         playText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         playText.setEffect(dropShadow);
 
-        moreText = new Text("Use other buttons for instructions, \ncopyrights, credits and scores.");
+        moreText = new Text("""
+        Use other buttons for instructions,
+        copyrights, credits and scores.
+        """);
         moreText.setFill(Color.WHITE);
         moreText.setFont(Font.font("Helvetica", FontPosture.ITALIC, 40));
         moreText.setEffect(dropShadow);
 
-        helpText = new Text("To play game roll the dice, advance game piece\n and follow game board instruction. ");
+        helpText = new Text("""
+        To play game roll the dice, advance game piece
+        and follow game board instruction. 
+        """);
         helpText.setFill(Color.GREEN);
         helpText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         helpText.setEffect(dropShadow);
 
-        cardText = new Text("If you land\non square that requires you draw a card it will \nappear in the floating UI text area.");
+        cardText = new Text("""
+        If you land
+        on square that requires you draw a card it will
+        appear in the floating UI text area.
+        """);
         cardText.setFill(Color.GREEN);
         cardText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         cardText.setEffect(dropShadow);
 
-        copyrightText = new Text("Copyright 2022 Omar Fernando Moreno Benito.\nAll Rights Reserved. \n");
+        copyrightText = new Text("""
+        Copyright 2022 Omar Fernando Moreno Benito.
+        All Rights Reserved.
+        """);
         copyrightText.setFill(Color.PURPLE);
         copyrightText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         copyrightText.setEffect(dropShadow);
 
-        creditText = new Text("Digital Imaging, 3D Modeling, 3D Texture Mapping,\n by Omar Fernando Moreno Benito. \n");
+        creditText = new Text("""
+        Digital Imaging, 3D Modeling, 3D Texture Mapping,
+        by Omar Fernando Moreno Benito.
+        """);
         creditText.setFill(Color.BLUE);
         creditText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         creditText.setEffect(dropShadow);
 
-        codeText = new Text("Game Design, User Interface Design, \nJava Programming by Omar Fernando Moreno Benito.");
+        codeText = new Text("""
+        Game Design, User Interface Design, 
+        Java Programming by Omar Fernando Moreno Benito.
+        """);
         codeText.setFill(Color.BLUE);
         codeText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         codeText.setEffect(dropShadow);
