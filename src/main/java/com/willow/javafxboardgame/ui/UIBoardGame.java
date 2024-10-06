@@ -25,14 +25,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
-import javafx.scene.shape.Cylinder;
-import javafx.scene.shape.Sphere;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Rotate;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class UIBoardGame {
@@ -40,6 +39,7 @@ public class UIBoardGame {
     private static Background uiBackground;
     private static Group root;
     private static Group gameBoard;
+    private static final Group [] Q = new Group[4];
     private static Scene scene;
     private static StackPane uiLayout;
     private static VBox uiContainer;
@@ -79,16 +79,21 @@ public class UIBoardGame {
     private static PerspectiveCamera camera;
 
     private static PointLight light;
-    private static PhongMaterial phongMaterial;
-    private static Sphere sphere;
-    private static Box box;
-    private static Cylinder pole;
+    private static final PhongMaterial[] Shader = new PhongMaterial[20];
+
+    private static final Box[] q = new Box[4];
+    private static final Box[] Q1S = new Box[5];
+    private static final Box[] Q2S = new Box[5];
+    private static final Box[] Q3S = new Box[5];
+    private static final Box[] Q4S = new Box[5];
 
     public static Scene init() {
         createSpecialEffects();
         loadImageAssets();
+        createMaterials();
         createTextAssets();
         createBoardGameNodes();
+        createGameBoardNodes();
         addNodesToSceneGraph();
         addEvents();
 
@@ -163,15 +168,51 @@ public class UIBoardGame {
 
     private static void addNodesToSceneGraph() {
         root.getChildren().addAll(gameBoard, uiLayout);
-        gameBoard.getChildren().add(box);
+        Arrays.stream(Q).forEach(gameBoard.getChildren()::add);
+        Arrays.stream(Q).forEach(group -> group.getChildren().add(q[Arrays.asList(Q).indexOf(group)]));
+        Q[0].getChildren().addAll(Q1S);
         uiLayout.getChildren().addAll(logoLayer, boardGameBackPlate, infoOverlay, uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
         infoOverlay.getChildren().addAll(playText, moreText);
     }
 
+    private static void createGameBoardNodes() {
+        createMainBoard();
+        createSubBoards();
+        hideAdditionalBoards();
+    }
+
+    private static void createMainBoard() {
+        q[0] = new Box(300, 5, 300);
+        q[0].setTranslateX(225);
+        q[0].setTranslateZ(225);
+    }
+
+    private static void createSubBoards() {
+        Arrays.setAll(Q1S, i -> {
+            var box = new Box(150, 5, 150);
+            box.setMaterial(Shader[i]);
+            return box;
+        });
+
+        Q1S[0].setTranslateX(300);
+        Q1S[1].setTranslateX(150);
+        Q1S[3].setTranslateZ(150);
+        Q1S[4].setTranslateZ(300);
+    }
+
+    private static void hideAdditionalBoards() {
+        for (var i = 1; i < q.length; i++) {
+            q[i] = new Box(300, 5, 300);
+            q[i].setVisible(false);
+
+        }
+    }
+
     private static void createBoardGameNodes() {
         root = new Group();
         gameBoard = new Group();
+        Arrays.setAll(Q, i -> new Group());
         camera = new PerspectiveCamera();
         camera.setTranslateZ(0);
         camera.setNearClip(0.1);
@@ -181,17 +222,7 @@ public class UIBoardGame {
         scene.setCamera(camera);
         light = new PointLight(Color.WHITE);
         light.setTranslateY(-25);
-        light.getScope().add(sphere);
-        phongMaterial = new PhongMaterial(Color.WHITE);
-        phongMaterial.setSpecularColor(Color.WHITE);
-        phongMaterial.setSpecularPower(20);
-        phongMaterial.setDiffuseMap(diffuseMap);
-        phongMaterial.setSpecularMap(specularMap);
-        phongMaterial.setSelfIlluminationMap(glowMap);
-        box = new Box(150, 5, 150);
-        box.setRotationAxis(Rotate.Y_AXIS);
-        box.setRotate(45);
-        box.setMaterial(phongMaterial);
+        light.getScope().add(Q1S[0]);
         uiLayout = new StackPane();
         uiLayout.setPrefWidth(1280);
         uiLayout.setPrefHeight(640);
@@ -255,59 +286,66 @@ public class UIBoardGame {
         uiBackground = new Background(uiBackgroundImage);
     }
 
+    private static void createMaterials(){
+        Arrays.setAll(Shader, i -> {
+            var material = new PhongMaterial(Color.WHITE);
+            material.setDiffuseMap(diffuseMap);
+            return material;
+        });
+    }
+
     private static void createTextAssets() {
         playText = new Text("""
-        Press the PLAY GAME Button to Start!
-        """);
+                Press the PLAY GAME Button to Start!
+                """);
         playText.setFill(Color.WHITE);
         playText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         playText.setEffect(dropShadow);
 
         moreText = new Text("""
-        Use other buttons for instructions,
-        copyrights, credits and scores.
-        """);
+                Use other buttons for instructions,
+                copyrights, credits and scores.
+                """);
         moreText.setFill(Color.WHITE);
         moreText.setFont(Font.font("Helvetica", FontPosture.ITALIC, 40));
         moreText.setEffect(dropShadow);
 
         helpText = new Text("""
-        To play game roll the dice, advance game piece
-        and follow game board instruction. 
-        """);
+                To play game roll the dice, advance game piece
+                and follow game board instruction. 
+                """);
         helpText.setFill(Color.GREEN);
         helpText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         helpText.setEffect(dropShadow);
 
         cardText = new Text("""
-        If you land
-        on square that requires you draw a card it will
-        appear in the floating UI text area.
-        """);
+                If you land on square that requires you draw a card it will
+                appear in the floating UI text area.
+                """);
         cardText.setFill(Color.GREEN);
         cardText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         cardText.setEffect(dropShadow);
 
         copyrightText = new Text("""
-        Copyright 2022 Omar Fernando Moreno Benito.
-        All Rights Reserved.
-        """);
+                Copyright 2022 Omar Fernando Moreno Benito.
+                All Rights Reserved.
+                """);
         copyrightText.setFill(Color.PURPLE);
         copyrightText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         copyrightText.setEffect(dropShadow);
 
         creditText = new Text("""
-        Digital Imaging, 3D Modeling, 3D Texture Mapping,
-        by Omar Fernando Moreno Benito.
-        """);
+                Digital Imaging, 3D Modeling, 3D Texture Mapping,
+                by Omar Fernando Moreno Benito.
+                """);
         creditText.setFill(Color.BLUE);
         creditText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         creditText.setEffect(dropShadow);
 
         codeText = new Text("""
-        Game Design, User Interface Design, 
-        Java Programming by Omar Fernando Moreno Benito.
-        """);
+                Game Design, User Interface Design, 
+                Java Programming by Omar Fernando Moreno Benito.
+                """);
         codeText.setFill(Color.BLUE);
         codeText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
         codeText.setEffect(dropShadow);
