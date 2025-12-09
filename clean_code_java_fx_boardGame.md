@@ -85,12 +85,15 @@ Added to `pom.xml`:
 **File created**: `checkstyle-suppressions.xml`
 
 Current suppressions for gradual adoption:
+- `module-info.java` - excluded from all checks (special syntax not supported by Checkstyle)
 - `MagicNumber` - suppressed in `UIBoardGame.java` (UI coordinates/sizes)
 - `MethodLength` - suppressed in `UIBoardGame.java` (UI init methods)
 - `ImportOrder` - suppressed globally (can enable later)
 - `MissingJavadocMethod` - suppressed globally
 - `MissingJavadocType` - suppressed globally
 - `HideUtilityClassConstructor` - suppressed for `UIBoardGame.java`
+
+**Note**: `checkstyle.xml` also includes `BeforeExecutionExclusionFileFilter` to exclude `module-info.java` from processing (required to prevent parsing errors).
 
 ---
 
@@ -100,21 +103,25 @@ Current suppressions for gradual adoption:
 
 | Issue | Original | Fixed To | Status |
 |-------|----------|----------|--------|
-| `Q` array naming | `Q` | `quadrants` | FIXED |
-| `Shader` array naming | `Shader` | `shaders` | FIXED |
-| `q` array naming | `q` | `mainBoards` | FIXED |
-| `Q1S` naming | `Q1S` | `quadrant1Squares` | FIXED |
-| `Q2S` naming | `Q2S` | `quadrant2Squares` | FIXED |
-| `Q3S` naming | `Q3S` | `quadrant3Squares` | FIXED |
-| `Q4S` naming | `Q4S` | `quadrant4Squares` | FIXED |
+| `Q` array naming | `Q` | `QUADRANTS` | FIXED |
+| `Shader` array naming | `Shader` | `SHADERS` | FIXED |
+| `q` array naming | `q` | `MAIN_BOARDS` | FIXED |
+| `Q1S` naming | `Q1S` | `QUADRANT_1_SQUARES` | FIXED |
+| `Q2S` naming | `Q2S` | `QUADRANT_2_SQUARES` | FIXED |
+| `Q3S` naming | `Q3S` | `QUADRANT_3_SQUARES` | FIXED |
+| `Q4S` naming | `Q4S` | `QUADRANT_4_SQUARES` | FIXED |
 | Whitespace before `{` | `createMaterials(){` | `createMaterials() {` | FIXED |
+| Line length violations | 11 lines > 120 chars | Wrapped to multiple lines | FIXED |
 
 ### 4.2 GameControllerHelper.java - FIXED
 
 | Issue | Original | Fixed To | Status |
 |-------|----------|----------|--------|
+| Missing `final` class | `public class` | `public final class` | FIXED |
 | Modifier order line 12 | `public final static` | `public static final` | FIXED |
 | Modifier order line 23 | `public final static` | `public static final` | FIXED |
+| Constant naming | `keyPressed` | `KEY_PRESSED` | FIXED |
+| Constant naming | `keyReleased` | `KEY_RELEASED` | FIXED |
 
 ### 4.3 BoardGame.java - FIXED
 
@@ -122,6 +129,7 @@ Current suppressions for gradual adoption:
 |-------|----------|----------|--------|
 | Double blank line (line 9-10) | Two blank lines | Single blank line | FIXED |
 | Double blank line (line 20-21) | Two blank lines | Single blank line | FIXED |
+| Missing newline at EOF | No newline | Added newline | FIXED |
 
 ---
 
@@ -170,7 +178,7 @@ Once code is refactored, remove these suppressions from `checkstyle-suppressions
 | `MissingJavadoc*` | Add Javadoc to public APIs |
 
 ### Extract Magic Numbers
-Create constants class or extract to fields:
+Create named constants for UI values currently suppressed by MagicNumber rule:
 ```java
 // Example constants to extract from UIBoardGame
 private static final int SCENE_WIDTH = 1280;
@@ -178,6 +186,9 @@ private static final int SCENE_HEIGHT = 640;
 private static final int BOARD_SIZE = 300;
 private static final int BOARD_DEPTH = 5;
 private static final int SUB_BOARD_SIZE = 150;
+private static final double DROP_SHADOW_RADIUS = 0.3;
+private static final int DROP_SHADOW_OFFSET = 3;
+// ... and other numeric literals
 ```
 
 ### Refactor Long Methods
@@ -210,8 +221,8 @@ Methods to consider splitting in `UIBoardGame.java`:
 | File | Action |
 |------|--------|
 | `pom.xml` | Modified - added checkstyle plugin |
-| `checkstyle.xml` | Created - custom configuration |
-| `checkstyle-suppressions.xml` | Created - suppression rules |
-| `UIBoardGame.java` | Modified - naming conventions |
-| `GameControllerHelper.java` | Modified - modifier order |
-| `BoardGame.java` | Modified - blank lines |
+| `checkstyle.xml` | Created - custom configuration with `BeforeExecutionExclusionFileFilter` for module-info.java |
+| `checkstyle-suppressions.xml` | Created - suppression rules including module-info.java exclusion |
+| `UIBoardGame.java` | Modified - UPPER_SNAKE_CASE constants, line length fixes |
+| `GameControllerHelper.java` | Modified - final class, modifier order, UPPER_SNAKE_CASE constants |
+| `BoardGame.java` | Modified - blank lines, newline at EOF |
