@@ -3,13 +3,13 @@ package com.willow.javafxboardgame.helper;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
-public class GameControllerHelper {
+public final class GameControllerHelper {
 
     private static boolean up;
     private static boolean down;
     private static boolean left;
     private static boolean right;
-    public static final EventHandler<? super KeyEvent> keyPressed = keyEvent -> {
+    public static final EventHandler<? super KeyEvent> KEY_PRESSED = keyEvent -> {
         switch (keyEvent.getCode()) {
             case UP, W -> up = true;
             case DOWN, S -> down = true;
@@ -20,7 +20,7 @@ public class GameControllerHelper {
         }
     };
 
-    public static final EventHandler<? super KeyEvent> keyReleased = keyEvent -> {
+    public static final EventHandler<? super KeyEvent> KEY_RELEASED = keyEvent -> {
         switch (keyEvent.getCode()) {
             case UP, W -> up = false;
             case DOWN, S -> down = false;

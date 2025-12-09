@@ -39,7 +39,7 @@ public class UIBoardGame {
     private static Background uiBackground;
     private static Group root;
     private static Group gameBoard;
-    private static final Group[] quadrants = new Group[4];
+    private static final Group[] QUADRANTS = new Group[4];
     private static Scene scene;
     private static StackPane uiLayout;
     private static VBox uiContainer;
@@ -79,13 +79,13 @@ public class UIBoardGame {
     private static PerspectiveCamera camera;
 
     private static PointLight light;
-    private static final PhongMaterial[] shaders = new PhongMaterial[20];
+    private static final PhongMaterial[] SHADERS = new PhongMaterial[20];
 
-    private static final Box[] mainBoards = new Box[4];
-    private static final Box[] quadrant1Squares = new Box[5];
-    private static final Box[] quadrant2Squares = new Box[5];
-    private static final Box[] quadrant3Squares = new Box[5];
-    private static final Box[] quadrant4Squares = new Box[5];
+    private static final Box[] MAIN_BOARDS = new Box[4];
+    private static final Box[] QUADRANT_1_SQUARES = new Box[5];
+    private static final Box[] QUADRANT_2_SQUARES = new Box[5];
+    private static final Box[] QUADRANT_3_SQUARES = new Box[5];
+    private static final Box[] QUADRANT_4_SQUARES = new Box[5];
 
     public static Scene init() {
         createSpecialEffects();
@@ -119,8 +119,8 @@ public class UIBoardGame {
         creditButton.setOnAction(actionEvent -> showCredits());
         scoreButton.setOnAction(actionEvent -> System.out.println("High Scores"));
 
-        scene.setOnKeyPressed(GameControllerHelper.keyPressed);
-        scene.setOnKeyReleased(GameControllerHelper.keyReleased);
+        scene.setOnKeyPressed(GameControllerHelper.KEY_PRESSED);
+        scene.setOnKeyReleased(GameControllerHelper.KEY_RELEASED);
     }
 
     private static void showCredits() {
@@ -168,9 +168,10 @@ public class UIBoardGame {
 
     private static void addNodesToSceneGraph() {
         root.getChildren().addAll(gameBoard, uiLayout);
-        Arrays.stream(quadrants).forEach(gameBoard.getChildren()::add);
-        Arrays.stream(quadrants).forEach(group -> group.getChildren().add(mainBoards[Arrays.asList(quadrants).indexOf(group)]));
-        quadrants[0].getChildren().addAll(quadrant1Squares);
+        Arrays.stream(QUADRANTS).forEach(gameBoard.getChildren()::add);
+        Arrays.stream(QUADRANTS).forEach(group ->
+                group.getChildren().add(MAIN_BOARDS[Arrays.asList(QUADRANTS).indexOf(group)]));
+        QUADRANTS[0].getChildren().addAll(QUADRANT_1_SQUARES);
         uiLayout.getChildren().addAll(logoLayer, boardGameBackPlate, infoOverlay, uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
         infoOverlay.getChildren().addAll(playText, moreText);
@@ -183,35 +184,35 @@ public class UIBoardGame {
     }
 
     private static void createMainBoard() {
-        mainBoards[0] = new Box(300, 5, 300);
-        mainBoards[0].setTranslateX(225);
-        mainBoards[0].setTranslateZ(225);
+        MAIN_BOARDS[0] = new Box(300, 5, 300);
+        MAIN_BOARDS[0].setTranslateX(225);
+        MAIN_BOARDS[0].setTranslateZ(225);
     }
 
     private static void createSubBoards() {
-        Arrays.setAll(quadrant1Squares, i -> {
+        Arrays.setAll(QUADRANT_1_SQUARES, i -> {
             var box = new Box(150, 5, 150);
-            box.setMaterial(shaders[i]);
+            box.setMaterial(SHADERS[i]);
             return box;
         });
 
-        quadrant1Squares[0].setTranslateX(300);
-        quadrant1Squares[1].setTranslateX(150);
-        quadrant1Squares[3].setTranslateZ(150);
-        quadrant1Squares[4].setTranslateZ(300);
+        QUADRANT_1_SQUARES[0].setTranslateX(300);
+        QUADRANT_1_SQUARES[1].setTranslateX(150);
+        QUADRANT_1_SQUARES[3].setTranslateZ(150);
+        QUADRANT_1_SQUARES[4].setTranslateZ(300);
     }
 
     private static void hideAdditionalBoards() {
-        for (var i = 1; i < mainBoards.length; i++) {
-            mainBoards[i] = new Box(300, 5, 300);
-            mainBoards[i].setVisible(false);
+        for (var i = 1; i < MAIN_BOARDS.length; i++) {
+            MAIN_BOARDS[i] = new Box(300, 5, 300);
+            MAIN_BOARDS[i].setVisible(false);
         }
     }
 
     private static void createBoardGameNodes() {
         root = new Group();
         gameBoard = new Group();
-        Arrays.setAll(quadrants, i -> new Group());
+        Arrays.setAll(QUADRANTS, i -> new Group());
         camera = new PerspectiveCamera();
         camera.setTranslateZ(0);
         camera.setNearClip(0.1);
@@ -221,7 +222,7 @@ public class UIBoardGame {
         scene.setCamera(camera);
         light = new PointLight(Color.WHITE);
         light.setTranslateY(-25);
-        light.getScope().add(quadrant1Squares[0]);
+        light.getScope().add(QUADRANT_1_SQUARES[0]);
         uiLayout = new StackPane();
         uiLayout.setPrefWidth(1280);
         uiLayout.setPrefHeight(640);
@@ -263,21 +264,30 @@ public class UIBoardGame {
 
         Image backPlate = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/backplate.png"))
                 .toString(), 1280, 640, true, false, true);
-        splashScreen = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/welcome.png")).toString(),
-                true);
-        helpLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/instructions.png")).toString(), true);
-        legalLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/copyrights.png")).toString(), true);
-        creditLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/credits.png")).toString(), true);
-        scoreLayer = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/high-scores.png")).toString(), true);
-        diffuseMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/gameboardsquare.png")).toString(),
+        splashScreen = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/welcome.png")).toString(), true);
+        helpLayer = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/instructions.png")).toString(), true);
+        legalLayer = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/copyrights.png")).toString(), true);
+        creditLayer = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/credits.png")).toString(), true);
+        scoreLayer = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/high-scores.png")).toString(), true);
+        diffuseMap = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/gameboardsquare.png")).toString(),
                 256, 256, true, true, true);
-        specularMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/gameboard3grayscale256px.png")).toString(),
+        specularMap = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/gameboard3grayscale256px.png")).toString(),
                 256, 256, true, true, true);
-        glowMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/gameboard2grayscale256px.png")).toString(),
+        glowMap = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/gameboard2grayscale256px.png")).toString(),
                 256, 256, true, true, true);
-        bumpMap = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/gameboard3grayscale256px.png")).toString(),
+        bumpMap = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/gameboard3grayscale256px.png")).toString(),
                 256, 256, true, true, true);
-        alphaLogo = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/alphalogo.png")).toString(), true);
+        alphaLogo = new Image(Objects.requireNonNull(
+                UIBoardGame.class.getResource("/images/alphalogo.png")).toString(), true);
 
         var uiBackgroundImage = new BackgroundImage(backPlate, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
@@ -286,7 +296,7 @@ public class UIBoardGame {
     }
 
     private static void createMaterials() {
-        Arrays.setAll(shaders, i -> {
+        Arrays.setAll(SHADERS, i -> {
             var material = new PhongMaterial(Color.WHITE);
             material.setDiffuseMap(diffuseMap);
             return material;
