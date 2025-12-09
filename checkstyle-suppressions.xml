@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Exclude module-info.java from all checks (special syntax not supported) -->
+    <suppress checks=".*" files="module-info\.java"/>
+
+    <!-- Suppress magic numbers in UI layout code (coordinates, sizes, colors) -->
+    <suppress checks="MagicNumber" files="UIBoardGame\.java"/>
+
+    <!-- Suppress method length for UI initialization methods -->
+    <suppress checks="MethodLength" files="UIBoardGame\.java"/>
+
+    <!-- Suppress import order during initial adoption -->
+    <suppress checks="ImportOrder" files=".*\.java"/>
+
+    <!-- Suppress Javadoc warnings during initial adoption -->
+    <suppress checks="MissingJavadocMethod" files=".*\.java"/>
+    <suppress checks="MissingJavadocType" files=".*\.java"/>
+
+    <!-- Suppress utility class constructor check for JavaFX Application classes -->
+    <suppress checks="HideUtilityClassConstructor" files="UIBoardGame\.java"/>
+</suppressions>

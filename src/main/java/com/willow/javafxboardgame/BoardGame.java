@@ -7,7 +7,6 @@ import javafx.stage.StageStyle;
 
 public class BoardGame extends Application {
 
-
     @Override
     public void start(Stage stage) {
         var scene = UIBoardGame.init();
@@ -17,7 +16,6 @@ public class BoardGame extends Application {
 
         stage.show();
     }
-
 
     public static void main(String[] args) {
         launch();

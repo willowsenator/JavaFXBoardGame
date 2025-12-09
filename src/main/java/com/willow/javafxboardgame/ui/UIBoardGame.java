@@ -39,7 +39,7 @@ public class UIBoardGame {
     private static Background uiBackground;
     private static Group root;
     private static Group gameBoard;
-    private static final Group [] Q = new Group[4];
+    private static final Group[] quadrants = new Group[4];
     private static Scene scene;
     private static StackPane uiLayout;
     private static VBox uiContainer;
@@ -79,13 +79,13 @@ public class UIBoardGame {
     private static PerspectiveCamera camera;
 
     private static PointLight light;
-    private static final PhongMaterial[] Shader = new PhongMaterial[20];
+    private static final PhongMaterial[] shaders = new PhongMaterial[20];
 
-    private static final Box[] q = new Box[4];
-    private static final Box[] Q1S = new Box[5];
-    private static final Box[] Q2S = new Box[5];
-    private static final Box[] Q3S = new Box[5];
-    private static final Box[] Q4S = new Box[5];
+    private static final Box[] mainBoards = new Box[4];
+    private static final Box[] quadrant1Squares = new Box[5];
+    private static final Box[] quadrant2Squares = new Box[5];
+    private static final Box[] quadrant3Squares = new Box[5];
+    private static final Box[] quadrant4Squares = new Box[5];
 
     public static Scene init() {
         createSpecialEffects();
@@ -168,9 +168,9 @@ public class UIBoardGame {
 
     private static void addNodesToSceneGraph() {
         root.getChildren().addAll(gameBoard, uiLayout);
-        Arrays.stream(Q).forEach(gameBoard.getChildren()::add);
-        Arrays.stream(Q).forEach(group -> group.getChildren().add(q[Arrays.asList(Q).indexOf(group)]));
-        Q[0].getChildren().addAll(Q1S);
+        Arrays.stream(quadrants).forEach(gameBoard.getChildren()::add);
+        Arrays.stream(quadrants).forEach(group -> group.getChildren().add(mainBoards[Arrays.asList(quadrants).indexOf(group)]));
+        quadrants[0].getChildren().addAll(quadrant1Squares);
         uiLayout.getChildren().addAll(logoLayer, boardGameBackPlate, infoOverlay, uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
         infoOverlay.getChildren().addAll(playText, moreText);
@@ -183,36 +183,35 @@ public class UIBoardGame {
     }
 
     private static void createMainBoard() {
-        q[0] = new Box(300, 5, 300);
-        q[0].setTranslateX(225);
-        q[0].setTranslateZ(225);
+        mainBoards[0] = new Box(300, 5, 300);
+        mainBoards[0].setTranslateX(225);
+        mainBoards[0].setTranslateZ(225);
     }
 
     private static void createSubBoards() {
-        Arrays.setAll(Q1S, i -> {
+        Arrays.setAll(quadrant1Squares, i -> {
             var box = new Box(150, 5, 150);
-            box.setMaterial(Shader[i]);
+            box.setMaterial(shaders[i]);
             return box;
         });
 
-        Q1S[0].setTranslateX(300);
-        Q1S[1].setTranslateX(150);
-        Q1S[3].setTranslateZ(150);
-        Q1S[4].setTranslateZ(300);
+        quadrant1Squares[0].setTranslateX(300);
+        quadrant1Squares[1].setTranslateX(150);
+        quadrant1Squares[3].setTranslateZ(150);
+        quadrant1Squares[4].setTranslateZ(300);
     }
 
     private static void hideAdditionalBoards() {
-        for (var i = 1; i < q.length; i++) {
-            q[i] = new Box(300, 5, 300);
-            q[i].setVisible(false);
-
+        for (var i = 1; i < mainBoards.length; i++) {
+            mainBoards[i] = new Box(300, 5, 300);
+            mainBoards[i].setVisible(false);
         }
     }
 
     private static void createBoardGameNodes() {
         root = new Group();
         gameBoard = new Group();
-        Arrays.setAll(Q, i -> new Group());
+        Arrays.setAll(quadrants, i -> new Group());
         camera = new PerspectiveCamera();
         camera.setTranslateZ(0);
         camera.setNearClip(0.1);
@@ -222,7 +221,7 @@ public class UIBoardGame {
         scene.setCamera(camera);
         light = new PointLight(Color.WHITE);
         light.setTranslateY(-25);
-        light.getScope().add(Q1S[0]);
+        light.getScope().add(quadrant1Squares[0]);
         uiLayout = new StackPane();
         uiLayout.setPrefWidth(1280);
         uiLayout.setPrefHeight(640);
@@ -286,8 +285,8 @@ public class UIBoardGame {
         uiBackground = new Background(uiBackgroundImage);
     }
 
-    private static void createMaterials(){
-        Arrays.setAll(Shader, i -> {
+    private static void createMaterials() {
+        Arrays.setAll(shaders, i -> {
             var material = new PhongMaterial(Color.WHITE);
             material.setDiffuseMap(diffuseMap);
             return material;
@@ -312,7 +311,7 @@ public class UIBoardGame {
 
         helpText = new Text("""
                 To play game roll the dice, advance game piece
-                and follow game board instruction. 
+                and follow game board instruction.
                 """);
         helpText.setFill(Color.GREEN);
         helpText.setFont(Font.font("Helvetica", FontPosture.REGULAR, 40));
@@ -343,7 +342,7 @@ public class UIBoardGame {
         creditText.setEffect(dropShadow);
 
         codeText = new Text("""
-                Game Design, User Interface Design, 
+                Game Design, User Interface Design,
                 Java Programming by Omar Fernando Moreno Benito.
                 """);
         codeText.setFill(Color.BLUE);
