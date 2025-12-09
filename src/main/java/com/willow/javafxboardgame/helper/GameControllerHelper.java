@@ -9,7 +9,7 @@ public class GameControllerHelper {
     private static boolean down;
     private static boolean left;
     private static boolean right;
-    public final static EventHandler<? super KeyEvent> keyPressed = keyEvent -> {
+    public static final EventHandler<? super KeyEvent> keyPressed = keyEvent -> {
         switch (keyEvent.getCode()) {
             case UP, W -> up = true;
             case DOWN, S -> down = true;
@@ -20,7 +20,7 @@ public class GameControllerHelper {
         }
     };
 
-    public final static EventHandler<? super KeyEvent> keyReleased = keyEvent -> {
+    public static final EventHandler<? super KeyEvent> keyReleased = keyEvent -> {
         switch (keyEvent.getCode()) {
             case UP, W -> up = false;
             case DOWN, S -> down = false;

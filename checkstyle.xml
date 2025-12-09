@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="error"/>
+    <property name="fileExtensions" value="java"/>
+
+    <!-- Exclude module-info.java from processing (not supported by Checkstyle) -->
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value="module-info\.java$"/>
+    </module>
+
+    <!-- Suppressions Filter -->
+    <module name="SuppressionFilter">
+        <property name="file" value="checkstyle-suppressions.xml"/>
+        <property name="optional" value="true"/>
+    </module>
+
+    <!-- File Length: Stricter than Sonar (500 vs 1000) -->
+    <module name="FileLength">
+        <property name="max" value="500"/>
+    </module>
+
+    <!-- Line Length: Stricter than Sonar (120 vs 200) -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
+    <!-- No Trailing Whitespace -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\s+$"/>
+        <property name="message" value="Line has trailing spaces."/>
+    </module>
+
+    <!-- Require newline at end of file -->
+    <module name="NewlineAtEndOfFile"/>
+
+    <module name="TreeWalker">
+
+        <!-- ==================== NAMING CONVENTIONS ==================== -->
+        <!-- Stricter than Sonar defaults -->
+
+        <!-- Constants MUST be UPPER_SNAKE_CASE -->
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+
+        <!-- Local final variables: allow lowercase -->
+        <module name="LocalFinalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Local variables: strict camelCase -->
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Member variables: strict camelCase (no prefix allowed) -->
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Method names: strict camelCase -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Package names: all lowercase -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+
+        <!-- Parameter names: strict camelCase -->
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Static variable names: camelCase -->
+        <module name="StaticVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Type names: PascalCase -->
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- ==================== IMPORTS ==================== -->
+        <!-- Stricter organization than Sonar -->
+
+        <!-- No star imports -->
+        <module name="AvoidStarImport">
+            <property name="allowStaticMemberImports" value="false"/>
+        </module>
+
+        <!-- No redundant imports -->
+        <module name="RedundantImport"/>
+
+        <!-- No unused imports -->
+        <module name="UnusedImports"/>
+
+        <!-- Import order: grouped and sorted -->
+        <module name="ImportOrder">
+            <property name="groups" value="java,javax,javafx,org,com"/>
+            <property name="ordered" value="true"/>
+            <property name="separated" value="true"/>
+            <property name="option" value="above"/>
+            <property name="sortStaticImportsAlphabetically" value="true"/>
+        </module>
+
+        <!-- ==================== SIZE LIMITS ==================== -->
+        <!-- Significantly stricter than Sonar -->
+
+        <!-- Method length: 30 lines (Sonar: 100) -->
+        <module name="MethodLength">
+            <property name="max" value="30"/>
+            <property name="countEmpty" value="false"/>
+        </module>
+
+        <!-- Parameter count: 5 (Sonar: 7) -->
+        <module name="ParameterNumber">
+            <property name="max" value="5"/>
+            <property name="ignoreOverriddenMethods" value="true"/>
+        </module>
+
+        <!-- ==================== WHITESPACE ==================== -->
+
+        <module name="EmptyForIteratorPad"/>
+        <module name="GenericWhitespace"/>
+        <module name="MethodParamPad"/>
+        <module name="NoWhitespaceAfter"/>
+        <module name="NoWhitespaceBefore"/>
+        <module name="ParenPad"/>
+        <module name="TypecastParenPad"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+        </module>
+
+        <!-- ==================== BRACES & BLOCKS ==================== -->
+
+        <!-- Always use braces -->
+        <module name="NeedBraces">
+            <property name="allowSingleLineStatement" value="false"/>
+        </module>
+
+        <!-- Left curly brace at end of line -->
+        <module name="LeftCurly"/>
+
+        <!-- Right curly brace placement -->
+        <module name="RightCurly"/>
+
+        <!-- Avoid empty blocks -->
+        <module name="EmptyBlock">
+            <property name="option" value="TEXT"/>
+        </module>
+
+        <!-- ==================== COMPLEXITY ==================== -->
+        <!-- Stricter than Sonar -->
+
+        <!-- Cyclomatic complexity: 10 (Sonar: 15) -->
+        <module name="CyclomaticComplexity">
+            <property name="max" value="10"/>
+        </module>
+
+        <!-- Nested if depth: 2 (Sonar: 3) -->
+        <module name="NestedIfDepth">
+            <property name="max" value="2"/>
+        </module>
+
+        <!-- Nested try depth: 1 (Sonar: 3) -->
+        <module name="NestedTryDepth">
+            <property name="max" value="1"/>
+        </module>
+
+        <!-- Boolean expression complexity: 3 -->
+        <module name="BooleanExpressionComplexity">
+            <property name="max" value="3"/>
+        </module>
+
+        <!-- ==================== CODING PRACTICES ==================== -->
+
+        <!-- No magic numbers -->
+        <module name="MagicNumber">
+            <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
+            <property name="ignoreHashCodeMethod" value="true"/>
+            <property name="ignoreAnnotation" value="true"/>
+        </module>
+
+        <!-- Simplify boolean returns -->
+        <module name="SimplifyBooleanReturn"/>
+
+        <!-- Simplify boolean expressions -->
+        <module name="SimplifyBooleanExpression"/>
+
+        <!-- String literal equality -->
+        <module name="StringLiteralEquality"/>
+
+        <!-- No nested blocks -->
+        <module name="AvoidNestedBlocks"/>
+
+        <!-- Default comes last in switch -->
+        <module name="DefaultComesLast"/>
+
+        <!-- Fall through in switch must be commented -->
+        <module name="FallThrough"/>
+
+        <!-- One statement per line -->
+        <module name="OneStatementPerLine"/>
+
+        <!-- Multiple variable declarations -->
+        <module name="MultipleVariableDeclarations"/>
+
+        <!-- Require this for instance variables -->
+        <module name="RequireThis">
+            <property name="checkMethods" value="false"/>
+            <property name="validateOnlyOverlapping" value="true"/>
+        </module>
+
+        <!-- ==================== CLASS DESIGN ==================== -->
+
+        <!-- Final class for private constructor -->
+        <module name="FinalClass"/>
+
+        <!-- Hide utility class constructor -->
+        <module name="HideUtilityClassConstructor"/>
+
+        <!-- One top level class per file -->
+        <module name="OneTopLevelClass"/>
+
+        <!-- Visibility modifier order -->
+        <module name="ModifierOrder"/>
+
+        <!-- Redundant modifiers -->
+        <module name="RedundantModifier"/>
+
+        <!-- ==================== JAVADOC (Warning only) ==================== -->
+
+        <module name="MissingJavadocMethod">
+            <property name="severity" value="warning"/>
+            <property name="scope" value="public"/>
+            <property name="allowMissingPropertyJavadoc" value="true"/>
+        </module>
+
+        <module name="MissingJavadocType">
+            <property name="severity" value="warning"/>
+            <property name="scope" value="public"/>
+        </module>
+
+    </module>
+</module>
