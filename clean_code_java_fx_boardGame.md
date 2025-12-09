@@ -18,6 +18,7 @@
 | Phase 4 | Fix Current Code Issues | COMPLETED |
 | Phase 5 | Maven Commands | READY |
 | Phase 6 | IDE Integration | PENDING |
+| Phase 7 | Java 24 Native Access Warnings | COMPLETED |
 
 ---
 
@@ -165,6 +166,68 @@ mvn clean verify -Dcheckstyle.skip=true
 
 ---
 
+## Phase 7: Java 24 Native Access Warnings - COMPLETED
+
+Java 24 enforces stricter encapsulation of internal APIs, causing warnings when running JavaFX applications.
+
+### 7.1 Problem
+
+```
+WARNING: java.lang.System::load has been called by com.sun.glass.utils.NativeLibLoader
+WARNING: Use --enable-native-access=javafx.graphics to avoid a warning
+```
+
+### 7.2 Solution
+
+| File | Change |
+|------|--------|
+| `pom.xml` | Added `--enable-native-access=javafx.graphics` to javafx-maven-plugin |
+| `.mvn/wrapper/maven-wrapper.properties` | Updated Maven 3.8.5 → 3.9.9 |
+| `.mvn/jvm.config` | Created with `--enable-native-access=ALL-UNNAMED` |
+
+### 7.3 pom.xml Configuration
+
+```xml
+<plugin>
+    <groupId>org.openjfx</groupId>
+    <artifactId>javafx-maven-plugin</artifactId>
+    <version>0.0.8</version>
+    <executions>
+        <execution>
+            <id>default-cli</id>
+            <configuration>
+                <mainClass>com.willow.javafxboardgame/com.willow.javafxboardgame.BoardGame</mainClass>
+                <!-- ... other options ... -->
+                <options>
+                    <option>--enable-native-access=javafx.graphics</option>
+                </options>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
+### 7.4 .mvn/jvm.config
+
+```
+--enable-native-access=ALL-UNNAMED
+```
+
+### 7.5 Remaining Warning (Cannot Be Fixed)
+
+The `sun.misc.Unsafe` warning from Guava cannot be suppressed:
+```
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by com.google.common.util.concurrent.AbstractFuture$UnsafeAtomicHelper
+```
+
+This is a known issue tracked in:
+- [Guava #7565](https://github.com/google/guava/issues/7565)
+- [Maven MNG-8399](https://github.com/apache/maven/issues/10228)
+
+The warning is cosmetic and will be resolved when Guava migrates to `VarHandle`.
+
+---
+
 ## Future Improvements (Backlog)
 
 ### Remove Suppressions Gradually
@@ -220,9 +283,11 @@ Methods to consider splitting in `UIBoardGame.java`:
 
 | File | Action |
 |------|--------|
-| `pom.xml` | Modified - added checkstyle plugin |
+| `pom.xml` | Modified - checkstyle plugin, JavaFX native access option |
 | `checkstyle.xml` | Created - custom configuration with `BeforeExecutionExclusionFileFilter` for module-info.java |
 | `checkstyle-suppressions.xml` | Created - suppression rules including module-info.java exclusion |
 | `UIBoardGame.java` | Modified - UPPER_SNAKE_CASE constants, line length fixes |
 | `GameControllerHelper.java` | Modified - final class, modifier order, UPPER_SNAKE_CASE constants |
 | `BoardGame.java` | Modified - blank lines, newline at EOF |
+| `.mvn/wrapper/maven-wrapper.properties` | Modified - Maven 3.8.5 → 3.9.9 |
+| `.mvn/jvm.config` | Created - native access flag for Maven |
