@@ -1,7 +1,9 @@
 package com.willow.javafxboardgame.ui;
 
 
-import com.willow.javafxboardgame.helper.GameControllerHelper;
+import com.willow.javafxboardgame.input.InputController;
+import com.willow.javafxboardgame.input.KeyboardController;
+import com.willow.javafxboardgame.model.GameState;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -34,73 +36,86 @@ import javafx.scene.transform.Rotate;
 import java.util.Arrays;
 import java.util.Objects;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL",
+        justification = "Fields will be used when game board quadrants are implemented")
 public class UIBoardGame {
 
-    private static Background uiBackground;
-    private static Group root;
-    private static Group gameBoard;
-    private static final Group[] QUADRANTS = new Group[4];
-    private static Scene scene;
-    private static StackPane uiLayout;
-    private static VBox uiContainer;
-    private static ImageView boardGameBackPlate;
+    private Background uiBackground;
+    private final Group root;
+    private Group gameBoard;
+    private final Group[] quadrants = new Group[4];
+    private final Scene scene;
+    private StackPane uiLayout;
+    private VBox uiContainer;
+    private ImageView boardGameBackPlate;
 
-    private static ImageView logoLayer;
-    private static TextFlow infoOverlay;
-    private static Image splashScreen;
-    private static Image helpLayer;
-    private static Image legalLayer;
-    private static Image creditLayer;
-    private static Image scoreLayer;
+    private ImageView logoLayer;
+    private TextFlow infoOverlay;
+    private Image splashScreen;
+    private Image helpLayer;
+    private Image legalLayer;
+    private Image creditLayer;
+    private Image scoreLayer;
 
-    private static Image alphaLogo;
+    private Image alphaLogo;
 
-    private static Image diffuseMap;
-    private static Image specularMap;
-    private static Image glowMap;
-    private static Image bumpMap;
+    private Image diffuseMap;
+    private Image specularMap;
+    private Image glowMap;
+    private Image bumpMap;
 
-    private static Button gameButton;
-    private static Button helpButton;
-    private static Button legalButton;
-    private static Button creditButton;
-    private static Button scoreButton;
+    private Button gameButton;
+    private Button helpButton;
+    private Button legalButton;
+    private Button creditButton;
+    private Button scoreButton;
 
-    private static Text playText;
-    private static Text moreText;
-    private static Text helpText;
-    private static Text cardText;
-    private static Text copyrightText;
-    private static Text creditText;
-    private static Text codeText;
-    private static DropShadow dropShadow;
-    private static ColorAdjust colorAdjust;
+    private Text playText;
+    private Text moreText;
+    private Text helpText;
+    private Text cardText;
+    private Text copyrightText;
+    private Text creditText;
+    private Text codeText;
+    private DropShadow dropShadow;
+    private ColorAdjust colorAdjust;
 
-    private static PerspectiveCamera camera;
+    private PerspectiveCamera camera;
 
-    private static PointLight light;
-    private static final PhongMaterial[] SHADERS = new PhongMaterial[20];
+    private PointLight light;
+    private final PhongMaterial[] shaders = new PhongMaterial[20];
+    private final InputController inputController = new KeyboardController();
+    private GameState gameState = new GameState.Menu();
 
-    private static final Box[] MAIN_BOARDS = new Box[4];
-    private static final Box[] QUADRANT_1_SQUARES = new Box[5];
-    private static final Box[] QUADRANT_2_SQUARES = new Box[5];
-    private static final Box[] QUADRANT_3_SQUARES = new Box[5];
-    private static final Box[] QUADRANT_4_SQUARES = new Box[5];
+    private final Box[] mainBoards = new Box[4];
+    private final Box[] quadrant1Squares = new Box[5];
+    private final Box[] quadrant2Squares = new Box[5];
+    private final Box[] quadrant3Squares = new Box[5];
+    private final Box[] quadrant4Squares = new Box[5];
 
-    public static Scene init() {
+    public UIBoardGame() {
         createSpecialEffects();
         loadImageAssets();
         createMaterials();
         createTextAssets();
+        this.root = new Group();
         createBoardGameNodes();
         createGameBoardNodes();
         addNodesToSceneGraph();
+        this.scene = new Scene(root, 1280, 640);
+        scene.setFill(Color.BLACK);
+        scene.setCamera(camera);
         addEvents();
+    }
 
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Scene must be exposed for JavaFX Stage")
+    public Scene getScene() {
         return scene;
     }
 
-    private static void createSpecialEffects() {
+    private void createSpecialEffects() {
         dropShadow = new DropShadow();
         dropShadow.setRadius(0.3);
         dropShadow.setRadius(0.3);
@@ -112,18 +127,51 @@ public class UIBoardGame {
         colorAdjust.setHue(0.4);
     }
 
-    private static void addEvents() {
-        gameButton.setOnAction(actionEvent -> showStartScreen());
-        helpButton.setOnAction(actionEvent -> showInstructions());
-        legalButton.setOnAction(actionEvent -> showCopyrights());
-        creditButton.setOnAction(actionEvent -> showCredits());
-        scoreButton.setOnAction(actionEvent -> System.out.println("High Scores"));
+    private void addEvents() {
+        gameButton.setOnAction(_ -> showStartScreen());
+        helpButton.setOnAction(_ -> showInstructions());
+        legalButton.setOnAction(_ -> showCopyrights());
+        creditButton.setOnAction(_ -> showCredits());
+        scoreButton.setOnAction(_ -> System.out.println("High Scores"));
 
-        scene.setOnKeyPressed(GameControllerHelper.KEY_PRESSED);
-        scene.setOnKeyReleased(GameControllerHelper.KEY_RELEASED);
+        scene.setOnKeyPressed(inputController.getKeyPressedHandler());
+        scene.setOnKeyReleased(inputController.getKeyReleasedHandler());
     }
 
-    private static void showCredits() {
+    /**
+     * Get the input controller for game logic to query input state.
+     */
+    public InputController getInputController() {
+        return inputController;
+    }
+
+    /**
+     * Get current game state.
+     */
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    /**
+     * Transition to a new game state using Java 24 pattern matching.
+     */
+    @SuppressFBWarnings(value = "ITC_INHERITANCE_TYPE_CHECKING",
+            justification = "Java 24 exhaustive pattern matching on sealed interface")
+    public void setGameState(GameState newState) {
+        this.gameState = switch (newState) {
+            case GameState.Menu _ -> {
+                uiLayout.setVisible(true);
+                yield newState;
+            }
+            case GameState.Playing _ -> {
+                uiLayout.setVisible(false);
+                yield newState;
+            }
+            case GameState.Paused _, GameState.GameOver _ -> newState;
+        };
+    }
+
+    private void showCredits() {
         infoOverlay.getChildren().clear();
         infoOverlay.getChildren().addAll(creditText, codeText);
         infoOverlay.setTranslateX(240);
@@ -134,7 +182,7 @@ public class UIBoardGame {
         colorAdjust.setHue(-0.9);
     }
 
-    private static void showCopyrights() {
+    private void showCopyrights() {
         infoOverlay.getChildren().clear();
         infoOverlay.getChildren().addAll(copyrightText);
         infoOverlay.setTranslateX(200);
@@ -145,8 +193,8 @@ public class UIBoardGame {
         colorAdjust.setHue(-0.4);
     }
 
-    private static void showStartScreen() {
-        uiLayout.setVisible(false);
+    private void showStartScreen() {
+        setGameState(new GameState.Playing(0, 1));
         camera.setTranslateZ(0);
         camera.setTranslateY(-500);
         camera.setTranslateX(-500);
@@ -155,7 +203,7 @@ public class UIBoardGame {
         camera.setFieldOfView(1);
     }
 
-    private static void showInstructions() {
+    private void showInstructions() {
         infoOverlay.getChildren().clear();
         infoOverlay.getChildren().addAll(helpText, cardText);
         infoOverlay.setTranslateX(130);
@@ -166,63 +214,60 @@ public class UIBoardGame {
         colorAdjust.setHue(0.4);
     }
 
-    private static void addNodesToSceneGraph() {
+    private void addNodesToSceneGraph() {
         root.getChildren().addAll(gameBoard, uiLayout);
-        Arrays.stream(QUADRANTS).forEach(gameBoard.getChildren()::add);
-        Arrays.stream(QUADRANTS).forEach(group ->
-                group.getChildren().add(MAIN_BOARDS[Arrays.asList(QUADRANTS).indexOf(group)]));
-        QUADRANTS[0].getChildren().addAll(QUADRANT_1_SQUARES);
+        Arrays.stream(quadrants).forEach(gameBoard.getChildren()::add);
+        Arrays.stream(quadrants).forEach(group ->
+                group.getChildren().add(mainBoards[Arrays.asList(quadrants).indexOf(group)]));
+        quadrants[0].getChildren().addAll(quadrant1Squares);
         uiLayout.getChildren().addAll(logoLayer, boardGameBackPlate, infoOverlay, uiContainer);
         uiContainer.getChildren().addAll(gameButton, helpButton, legalButton, creditButton, scoreButton);
         infoOverlay.getChildren().addAll(playText, moreText);
     }
 
-    private static void createGameBoardNodes() {
+    private void createGameBoardNodes() {
         createMainBoard();
         createSubBoards();
         hideAdditionalBoards();
     }
 
-    private static void createMainBoard() {
-        MAIN_BOARDS[0] = new Box(300, 5, 300);
-        MAIN_BOARDS[0].setTranslateX(225);
-        MAIN_BOARDS[0].setTranslateZ(225);
+    private void createMainBoard() {
+        mainBoards[0] = new Box(300, 5, 300);
+        mainBoards[0].setTranslateX(225);
+        mainBoards[0].setTranslateZ(225);
     }
 
-    private static void createSubBoards() {
-        Arrays.setAll(QUADRANT_1_SQUARES, i -> {
+    private void createSubBoards() {
+        // Board square positions: X translations for indices 0,1 and Z translations for indices 3,4
+        int[] xTranslations = {300, 150, 0, 0, 0};
+        int[] zTranslations = {0, 0, 0, 150, 300};
+
+        Arrays.setAll(quadrant1Squares, i -> {
             var box = new Box(150, 5, 150);
-            box.setMaterial(SHADERS[i]);
+            box.setMaterial(shaders[i]);
+            box.setTranslateX(xTranslations[i]);
+            box.setTranslateZ(zTranslations[i]);
             return box;
         });
-
-        QUADRANT_1_SQUARES[0].setTranslateX(300);
-        QUADRANT_1_SQUARES[1].setTranslateX(150);
-        QUADRANT_1_SQUARES[3].setTranslateZ(150);
-        QUADRANT_1_SQUARES[4].setTranslateZ(300);
     }
 
-    private static void hideAdditionalBoards() {
-        for (var i = 1; i < MAIN_BOARDS.length; i++) {
-            MAIN_BOARDS[i] = new Box(300, 5, 300);
-            MAIN_BOARDS[i].setVisible(false);
+    private void hideAdditionalBoards() {
+        for (var i = 1; i < mainBoards.length; i++) {
+            mainBoards[i] = new Box(300, 5, 300);
+            mainBoards[i].setVisible(false);
         }
     }
 
-    private static void createBoardGameNodes() {
-        root = new Group();
+    private void createBoardGameNodes() {
         gameBoard = new Group();
-        Arrays.setAll(QUADRANTS, i -> new Group());
+        Arrays.setAll(quadrants, i -> new Group());
         camera = new PerspectiveCamera();
         camera.setTranslateZ(0);
         camera.setNearClip(0.1);
         camera.setFarClip(5000);
-        scene = new Scene(root, 1280, 640);
-        scene.setFill(Color.BLACK);
-        scene.setCamera(camera);
         light = new PointLight(Color.WHITE);
         light.setTranslateY(-25);
-        light.getScope().add(QUADRANT_1_SQUARES[0]);
+        light.getScope().add(quadrant1Squares[0]);
         uiLayout = new StackPane();
         uiLayout.setPrefWidth(1280);
         uiLayout.setPrefHeight(640);
@@ -260,7 +305,7 @@ public class UIBoardGame {
         creditButton.setMaxWidth(125);
     }
 
-    private static void loadImageAssets() {
+    private void loadImageAssets() {
 
         Image backPlate = new Image(Objects.requireNonNull(UIBoardGame.class.getResource("/images/backplate.png"))
                 .toString(), 1280, 640, true, false, true);
@@ -295,15 +340,15 @@ public class UIBoardGame {
         uiBackground = new Background(uiBackgroundImage);
     }
 
-    private static void createMaterials() {
-        Arrays.setAll(SHADERS, i -> {
+    private void createMaterials() {
+        Arrays.setAll(shaders, i -> {
             var material = new PhongMaterial(Color.WHITE);
             material.setDiffuseMap(diffuseMap);
             return material;
         });
     }
 
-    private static void createTextAssets() {
+    private void createTextAssets() {
         playText = new Text("""
                 Press the PLAY GAME Button to Start!
                 """);
