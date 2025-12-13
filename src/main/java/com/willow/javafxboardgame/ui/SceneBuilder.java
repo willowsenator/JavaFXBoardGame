@@ -12,6 +12,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -35,13 +36,20 @@ public final class SceneBuilder {
     private static final int SCENE_HEIGHT = 640;
     private static final int BUTTON_WIDTH = 125;
 
-    // Board configuration
-    private static final int QUADRANT_COUNT = 4;
-    private static final int SQUARES_PER_QUADRANT = 5;
-    private static final int MAIN_BOARD_SIZE = 300;
-    private static final int MAIN_BOARD_HEIGHT = 5;
-    private static final int MAIN_BOARD_OFFSET = 225;
-    private static final int SUB_BOARD_SIZE = 150;
+    // Board configuration - 8 main boards with subboards between them
+    private static final int MAIN_BOARD_COUNT = 8;
+    private static final int SUB_BOARDS_PER_SEGMENT = 2;  // 2 per segment × 2 segments per edge = 4 per edge
+    private static final int MAIN_BOARD_SIZE = 100;
+    private static final int BOARD_HEIGHT = 5;
+    private static final int SUB_BOARD_SIZE = 100;
+
+    // Board layout - 8 main boards arranged in a square pattern
+    // Corner offset = main_board/2 + 2 subboards + main_board/2 = 50 + 200 + 50 = 300
+    private static final int CORNER_OFFSET = 300;
+    private static final int EDGE_OFFSET = 300;
+
+    // Center board (white area in the middle)
+    private static final int CENTER_SIZE = 600;
 
     // Camera configuration
     private static final double CAMERA_NEAR_CLIP = 0.1;
@@ -228,56 +236,99 @@ public final class SceneBuilder {
 
     private static GameBoardNodes createGameBoardNodes(GameAssets assets) {
         Group gameBoard = new Group();
-        Group[] quadrants = new Group[QUADRANT_COUNT];
-        Arrays.setAll(quadrants, _ -> new Group());
 
-        Box[] mainBoards = createMainBoards();
-        Box[] quadrant1Squares = createSubBoards(assets);
+        Box[] mainBoards = createMainBoards(assets);
+        Box[][] subBoards = createAllSubBoards(assets);
+        Box centerBoard = createCenterBoard();
 
         PointLight light = new PointLight(Color.WHITE);
         light.setTranslateY(LIGHT_Y_OFFSET);
-        light.getScope().add(quadrant1Squares[0]);
+        // Add all boards to light scope
+        Arrays.stream(mainBoards).forEach(light.getScope()::add);
+        Arrays.stream(subBoards).flatMap(Arrays::stream).forEach(light.getScope()::add);
+        light.getScope().add(centerBoard);
 
-        return new GameBoardNodes(gameBoard, quadrants, mainBoards, quadrant1Squares, light);
+        return new GameBoardNodes(gameBoard, mainBoards, subBoards, centerBoard, light);
     }
 
-    private static Box[] createMainBoards() {
-        Box[] mainBoards = new Box[QUADRANT_COUNT];
-        mainBoards[0] = new Box(MAIN_BOARD_SIZE, MAIN_BOARD_HEIGHT, MAIN_BOARD_SIZE);
-        mainBoards[0].setTranslateX(MAIN_BOARD_OFFSET);
-        mainBoards[0].setTranslateZ(MAIN_BOARD_OFFSET);
+    private static Box[] createMainBoards(GameAssets assets) {
+        // 8 main boards: 4 corners + 4 edge midpoints
+        // Clockwise from top-right: 0=TR, 1=R, 2=BR, 3=B, 4=BL, 5=L, 6=TL, 7=T
+        int[] xPositions = {
+            CORNER_OFFSET, EDGE_OFFSET, CORNER_OFFSET, 0,
+            -CORNER_OFFSET, -EDGE_OFFSET, -CORNER_OFFSET, 0
+        };
+        int[] zPositions = {
+            CORNER_OFFSET, 0, -CORNER_OFFSET, -EDGE_OFFSET,
+            -CORNER_OFFSET, 0, CORNER_OFFSET, EDGE_OFFSET
+        };
 
-        // Hide additional boards (for future implementation)
-        for (int i = 1; i < mainBoards.length; i++) {
-            mainBoards[i] = new Box(MAIN_BOARD_SIZE, MAIN_BOARD_HEIGHT, MAIN_BOARD_SIZE);
-            mainBoards[i].setVisible(false);
-        }
+        Box[] mainBoards = new Box[MAIN_BOARD_COUNT];
+        Arrays.setAll(mainBoards, i -> {
+            var box = new Box(MAIN_BOARD_SIZE, BOARD_HEIGHT, MAIN_BOARD_SIZE);
+            box.setMaterial(assets.shaders()[i % assets.shaders().length]);
+            box.setTranslateX(xPositions[i]);
+            box.setTranslateZ(zPositions[i]);
+            return box;
+        });
         return mainBoards;
     }
 
-    private static Box[] createSubBoards(GameAssets assets) {
-        int[] xTranslations = {MAIN_BOARD_SIZE, SUB_BOARD_SIZE, 0, 0, 0};
-        int[] zTranslations = {0, 0, 0, SUB_BOARD_SIZE, MAIN_BOARD_SIZE};
+    private static Box[][] createAllSubBoards(GameAssets assets) {
+        // 8 segments of subboards connecting adjacent main boards
+        SegmentConfig[] configs = {
+            new SegmentConfig(CORNER_OFFSET, CORNER_OFFSET, 0, -1),     // TR to R
+            new SegmentConfig(CORNER_OFFSET, 0, 0, -1),                 // R to BR
+            new SegmentConfig(CORNER_OFFSET, -CORNER_OFFSET, -1, 0),   // BR to B
+            new SegmentConfig(0, -CORNER_OFFSET, -1, 0),                // B to BL
+            new SegmentConfig(-CORNER_OFFSET, -CORNER_OFFSET, 0, 1),   // BL to L
+            new SegmentConfig(-CORNER_OFFSET, 0, 0, 1),                 // L to TL
+            new SegmentConfig(-CORNER_OFFSET, CORNER_OFFSET, 1, 0),    // TL to T
+            new SegmentConfig(0, CORNER_OFFSET, 1, 0)                   // T to TR
+        };
 
-        Box[] squares = new Box[SQUARES_PER_QUADRANT];
-        Arrays.setAll(squares, i -> {
-            var box = new Box(SUB_BOARD_SIZE, MAIN_BOARD_HEIGHT, SUB_BOARD_SIZE);
-            box.setMaterial(assets.shaders()[i]);
-            box.setTranslateX(xTranslations[i]);
-            box.setTranslateZ(zTranslations[i]);
+        Box[][] allSubBoards = new Box[MAIN_BOARD_COUNT][];
+        Arrays.setAll(allSubBoards, i -> createSubBoardSegment(assets, configs[i], i));
+        return allSubBoards;
+    }
+
+    private static Box[] createSubBoardSegment(GameAssets assets, SegmentConfig config, int segmentIdx) {
+        Box[] segment = new Box[SUB_BOARDS_PER_SEGMENT];
+        Arrays.setAll(segment, i -> {
+            var box = new Box(SUB_BOARD_SIZE, BOARD_HEIGHT, SUB_BOARD_SIZE);
+            int shaderIndex = (segmentIdx * SUB_BOARDS_PER_SEGMENT + i) % assets.shaders().length;
+            box.setMaterial(assets.shaders()[shaderIndex]);
+            int offsetX = (i + 1) * SUB_BOARD_SIZE * config.dirX();
+            int offsetZ = (i + 1) * SUB_BOARD_SIZE * config.dirZ();
+            box.setTranslateX(config.startX() + offsetX);
+            box.setTranslateZ(config.startZ() + offsetZ);
             return box;
         });
-        return squares;
+        return segment;
+    }
+
+    private record SegmentConfig(int startX, int startZ, int dirX, int dirZ) { }
+
+    private static Box createCenterBoard() {
+        var center = new Box(CENTER_SIZE, BOARD_HEIGHT, CENTER_SIZE);
+        var whiteMaterial = new PhongMaterial(Color.WHITE);
+        center.setMaterial(whiteMaterial);
+        return center;
     }
 
     private static void addNodesToSceneGraph(UINodes ui, GameBoardNodes board, TextAssets text) {
         ui.root().getChildren().addAll(board.gameBoard(), ui.uiLayout());
 
-        Arrays.stream(board.quadrants()).forEach(board.gameBoard().getChildren()::add);
-        for (int i = 0; i < board.quadrants().length; i++) {
-            board.quadrants()[i].getChildren().add(board.mainBoards()[i]);
+        // Add center board first (at bottom layer)
+        board.gameBoard().getChildren().add(board.centerBoard());
+
+        // Add main boards
+        board.gameBoard().getChildren().addAll(board.mainBoards());
+
+        // Add all subboard segments
+        for (Box[] segment : board.subBoards()) {
+            board.gameBoard().getChildren().addAll(segment);
         }
-        board.quadrants()[0].getChildren().addAll(board.quadrant1Squares());
 
         ui.uiLayout().getChildren().addAll(
                 ui.logoLayer(), ui.boardGameBackPlate(), ui.infoOverlay(), ui.uiContainer());
@@ -322,9 +373,9 @@ public final class SceneBuilder {
      */
     private record GameBoardNodes(
             Group gameBoard,
-            Group[] quadrants,
             Box[] mainBoards,
-            Box[] quadrant1Squares,
+            Box[][] subBoards,
+            Box centerBoard,
             PointLight light
     ) { }
 }
