@@ -21,7 +21,6 @@ public final class MenuController {
     private static final double CAMERA_Y_POSITION = -500;
     private static final double CAMERA_X_POSITION = -500;
     private static final double CAMERA_ROTATION = -45;
-    private static final double CAMERA_FOV = 1;
 
     // Info overlay positions for different screens
     private static final double INSTRUCTIONS_X = 130;
@@ -80,7 +79,6 @@ public final class MenuController {
         camera.setTranslateX(CAMERA_X_POSITION);
         camera.setRotationAxis(Rotate.X_AXIS);
         camera.setRotate(CAMERA_ROTATION);
-        camera.setFieldOfView(CAMERA_FOV);
     }
 
     private void showInstructions() {

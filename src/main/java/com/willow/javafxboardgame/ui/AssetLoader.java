@@ -11,8 +11,9 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * Loads and manages all image and material assets for the game.
@@ -111,14 +112,14 @@ public final class AssetLoader {
                 TEXTURE_SIZE, TEXTURE_SIZE, true, true, true);
     }
 
-    private static PhongMaterial[] createMaterials(Image diffuseMap) {
-        PhongMaterial[] shaders = new PhongMaterial[SHADER_COUNT];
-        Arrays.setAll(shaders, _ -> {
-            var material = new PhongMaterial(Color.WHITE);
-            material.setDiffuseMap(diffuseMap);
-            return material;
-        });
-        return shaders;
+    private static List<PhongMaterial> createMaterials(Image diffuseMap) {
+        return IntStream.range(0, SHADER_COUNT)
+                .mapToObj(_ -> {
+                    var material = new PhongMaterial(Color.WHITE);
+                    material.setDiffuseMap(diffuseMap);
+                    return material;
+                })
+                .toList();
     }
 
     /**

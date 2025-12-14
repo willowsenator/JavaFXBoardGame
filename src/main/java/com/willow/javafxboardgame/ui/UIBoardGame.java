@@ -15,7 +15,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * - MenuController: handles button events
  */
 @SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL",
-        justification = "MenuController held for lifecycle; may expose in future for state queries")
+        justification = "MenuController held for lifecycle management")
 public class UIBoardGame {
 
     private final Scene scene;
@@ -32,7 +32,8 @@ public class UIBoardGame {
         this.menuController = new MenuController(components, assets, inputController, this::setGameState);
     }
 
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Scene must be exposed for JavaFX Stage")
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP",
+            justification = "Scene must be exposed for JavaFX Stage")
     public Scene getScene() {
         return scene;
     }
