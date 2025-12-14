@@ -3,7 +3,7 @@ package com.willow.javafxboardgame.ui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
+import javafx.scene.ParallelCamera;
 import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -19,16 +19,12 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-import java.util.Arrays;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
+import java.util.List;
+import java.util.stream.IntStream;
 /**
  * Builds the complete scene graph from loaded assets.
  * Returns an immutable SceneComponents record.
  */
-@SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL",
-        justification = "Fields will be used when game board quadrants are fully implemented")
 public final class SceneBuilder {
 
     // Scene dimensions
@@ -131,8 +127,10 @@ public final class SceneBuilder {
                 Color.GREEN, FontPosture.REGULAR, assets);
 
         Text cardText = createStyledText(
-                "If you land on square that requires you draw a card\n"
-                        + "it will appear in the floating UI text area.\n",
+                """
+                        If you land on square that requires you draw a card
+                        it will appear in the floating UI text area.
+                        """,
                 Color.GREEN, FontPosture.REGULAR, assets);
 
         Text copyrightText = createStyledText(
@@ -160,7 +158,7 @@ public final class SceneBuilder {
 
     private static UINodes createUINodes(GameAssets assets) {
         Group root = new Group();
-        PerspectiveCamera camera = createCamera();
+        ParallelCamera camera = createCamera();
         StackPane uiLayout = createUILayout(assets);
         ImageView boardGameBackPlate = createBackPlate(assets);
         ImageView logoLayer = createLogoLayer(assets);
@@ -180,8 +178,8 @@ public final class SceneBuilder {
         );
     }
 
-    private static PerspectiveCamera createCamera() {
-        PerspectiveCamera camera = new PerspectiveCamera();
+    private static ParallelCamera createCamera() {
+        ParallelCamera camera = new ParallelCamera();
         camera.setTranslateZ(0);
         camera.setNearClip(CAMERA_NEAR_CLIP);
         camera.setFarClip(CAMERA_FAR_CLIP);
@@ -237,21 +235,21 @@ public final class SceneBuilder {
     private static GameBoardNodes createGameBoardNodes(GameAssets assets) {
         Group gameBoard = new Group();
 
-        Box[] mainBoards = createMainBoards(assets);
-        Box[][] subBoards = createAllSubBoards(assets);
+        List<Box> mainBoards = createMainBoards(assets);
+        List<List<Box>> subBoards = createAllSubBoards(assets);
         Box centerBoard = createCenterBoard();
 
         PointLight light = new PointLight(Color.WHITE);
         light.setTranslateY(LIGHT_Y_OFFSET);
         // Add all boards to light scope
-        Arrays.stream(mainBoards).forEach(light.getScope()::add);
-        Arrays.stream(subBoards).flatMap(Arrays::stream).forEach(light.getScope()::add);
+        mainBoards.forEach(light.getScope()::add);
+        subBoards.stream().flatMap(List::stream).forEach(light.getScope()::add);
         light.getScope().add(centerBoard);
 
         return new GameBoardNodes(gameBoard, mainBoards, subBoards, centerBoard, light);
     }
 
-    private static Box[] createMainBoards(GameAssets assets) {
+    private static List<Box> createMainBoards(GameAssets assets) {
         // 8 main boards: 4 corners + 4 edge midpoints
         // Clockwise from top-right: 0=TR, 1=R, 2=BR, 3=B, 4=BL, 5=L, 6=TL, 7=T
         int[] xPositions = {
@@ -263,20 +261,20 @@ public final class SceneBuilder {
             -CORNER_OFFSET, 0, CORNER_OFFSET, EDGE_OFFSET
         };
 
-        Box[] mainBoards = new Box[MAIN_BOARD_COUNT];
-        Arrays.setAll(mainBoards, i -> {
-            var box = new Box(MAIN_BOARD_SIZE, BOARD_HEIGHT, MAIN_BOARD_SIZE);
-            box.setMaterial(assets.shaders()[i % assets.shaders().length]);
-            box.setTranslateX(xPositions[i]);
-            box.setTranslateZ(zPositions[i]);
-            return box;
-        });
-        return mainBoards;
+        return IntStream.range(0, MAIN_BOARD_COUNT)
+                .mapToObj(i -> {
+                    var box = new Box(MAIN_BOARD_SIZE, BOARD_HEIGHT, MAIN_BOARD_SIZE);
+                    box.setMaterial(assets.shaders().get(i % assets.shaders().size()));
+                    box.setTranslateX(xPositions[i]);
+                    box.setTranslateZ(zPositions[i]);
+                    return box;
+                })
+                .toList();
     }
 
-    private static Box[][] createAllSubBoards(GameAssets assets) {
+    private static List<List<Box>> createAllSubBoards(GameAssets assets) {
         // 8 segments of subboards connecting adjacent main boards
-        SegmentConfig[] configs = {
+        List<SegmentConfig> configs = List.of(
             new SegmentConfig(CORNER_OFFSET, CORNER_OFFSET, 0, -1),     // TR to R
             new SegmentConfig(CORNER_OFFSET, 0, 0, -1),                 // R to BR
             new SegmentConfig(CORNER_OFFSET, -CORNER_OFFSET, -1, 0),   // BR to B
@@ -285,26 +283,26 @@ public final class SceneBuilder {
             new SegmentConfig(-CORNER_OFFSET, 0, 0, 1),                 // L to TL
             new SegmentConfig(-CORNER_OFFSET, CORNER_OFFSET, 1, 0),    // TL to T
             new SegmentConfig(0, CORNER_OFFSET, 1, 0)                   // T to TR
-        };
+        );
 
-        Box[][] allSubBoards = new Box[MAIN_BOARD_COUNT][];
-        Arrays.setAll(allSubBoards, i -> createSubBoardSegment(assets, configs[i], i));
-        return allSubBoards;
+        return IntStream.range(0, MAIN_BOARD_COUNT)
+                .mapToObj(i -> createSubBoardSegment(assets, configs.get(i), i))
+                .toList();
     }
 
-    private static Box[] createSubBoardSegment(GameAssets assets, SegmentConfig config, int segmentIdx) {
-        Box[] segment = new Box[SUB_BOARDS_PER_SEGMENT];
-        Arrays.setAll(segment, i -> {
-            var box = new Box(SUB_BOARD_SIZE, BOARD_HEIGHT, SUB_BOARD_SIZE);
-            int shaderIndex = (segmentIdx * SUB_BOARDS_PER_SEGMENT + i) % assets.shaders().length;
-            box.setMaterial(assets.shaders()[shaderIndex]);
-            int offsetX = (i + 1) * SUB_BOARD_SIZE * config.dirX();
-            int offsetZ = (i + 1) * SUB_BOARD_SIZE * config.dirZ();
-            box.setTranslateX(config.startX() + offsetX);
-            box.setTranslateZ(config.startZ() + offsetZ);
-            return box;
-        });
-        return segment;
+    private static List<Box> createSubBoardSegment(GameAssets assets, SegmentConfig config, int segmentIdx) {
+        return IntStream.range(0, SUB_BOARDS_PER_SEGMENT)
+                .mapToObj(i -> {
+                    var box = new Box(SUB_BOARD_SIZE, BOARD_HEIGHT, SUB_BOARD_SIZE);
+                    int shaderIndex = (segmentIdx * SUB_BOARDS_PER_SEGMENT + i) % assets.shaders().size();
+                    box.setMaterial(assets.shaders().get(shaderIndex));
+                    int offsetX = (i + 1) * SUB_BOARD_SIZE * config.dirX();
+                    int offsetZ = (i + 1) * SUB_BOARD_SIZE * config.dirZ();
+                    box.setTranslateX(config.startX() + offsetX);
+                    box.setTranslateZ(config.startZ() + offsetZ);
+                    return box;
+                })
+                .toList();
     }
 
     private record SegmentConfig(int startX, int startZ, int dirX, int dirZ) { }
@@ -326,9 +324,7 @@ public final class SceneBuilder {
         board.gameBoard().getChildren().addAll(board.mainBoards());
 
         // Add all subboard segments
-        for (Box[] segment : board.subBoards()) {
-            board.gameBoard().getChildren().addAll(segment);
-        }
+        board.subBoards().forEach(segment -> board.gameBoard().getChildren().addAll(segment));
 
         ui.uiLayout().getChildren().addAll(
                 ui.logoLayer(), ui.boardGameBackPlate(), ui.infoOverlay(), ui.uiContainer());
@@ -355,7 +351,7 @@ public final class SceneBuilder {
      */
     private record UINodes(
             Group root,
-            PerspectiveCamera camera,
+            ParallelCamera camera,
             StackPane uiLayout,
             ImageView boardGameBackPlate,
             ImageView logoLayer,
@@ -373,8 +369,8 @@ public final class SceneBuilder {
      */
     private record GameBoardNodes(
             Group gameBoard,
-            Box[] mainBoards,
-            Box[][] subBoards,
+            List<Box> mainBoards,
+            List<List<Box>> subBoards,
             Box centerBoard,
             PointLight light
     ) { }

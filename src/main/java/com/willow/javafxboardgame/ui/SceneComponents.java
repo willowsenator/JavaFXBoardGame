@@ -1,6 +1,6 @@
 package com.willow.javafxboardgame.ui;
 
-import javafx.scene.PerspectiveCamera;
+import javafx.scene.ParallelCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
@@ -15,15 +15,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Created by SceneBuilder.build().
  */
 @SuppressFBWarnings(
-        value = "EI_EXPOSE_REP",
-        justification = "Record provides access to scene components for event wiring; JavaFX nodes are mutable")
+        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
+        justification = "Record provides scene components for event wiring; JavaFX nodes are mutable")
 public record SceneComponents(
         Scene scene,
         StackPane uiLayout,
         ImageView boardGameBackPlate,
         ImageView logoLayer,
         TextFlow infoOverlay,
-        PerspectiveCamera camera,
+        ParallelCamera camera,
         Button gameButton,
         Button helpButton,
         Button legalButton,
