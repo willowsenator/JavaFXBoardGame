@@ -4,7 +4,7 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
 /**
- * Sealed interface for input controllers using Java 24 features.
+ * Sealed interface for input controllers using Java 17 features.
  * Permits only known implementations for exhaustive pattern matching.
  */
 public sealed interface InputController permits KeyboardController {

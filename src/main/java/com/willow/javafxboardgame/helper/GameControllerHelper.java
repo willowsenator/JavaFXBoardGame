@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class GameControllerHelper {
 
     /**
-     * Immutable snapshot of current input state (Java 24 record).
+     * Immutable snapshot of current input state (Java 16 record).
      */
     public record InputState(boolean up, boolean down, boolean left, boolean right) {
         public boolean hasMovement() {
@@ -44,7 +44,7 @@ public final class GameControllerHelper {
             case DOWN, S -> down.set(pressed);
             case LEFT, A -> left.set(pressed);
             case RIGHT, D -> right.set(pressed);
-            default -> { } // Unnamed pattern - ignore other keys
+            default -> { } // Default case with empty block - ignore other keys
         }
     }
 
