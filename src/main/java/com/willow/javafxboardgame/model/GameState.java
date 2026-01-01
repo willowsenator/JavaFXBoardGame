@@ -73,7 +73,7 @@ public sealed interface GameState permits
      * Check if game accepts input.
      */
     @SuppressFBWarnings(value = "ITC_INHERITANCE_TYPE_CHECKING",
-            justification = "Java 24 exhaustive pattern matching on sealed interface")
+            justification = "Java 21 exhaustive pattern matching on sealed interface")
     default boolean acceptsInput() {
         return switch (this) {
             case Playing _ -> true;
