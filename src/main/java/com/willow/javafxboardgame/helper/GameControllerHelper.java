@@ -38,7 +38,7 @@ public final class GameControllerHelper {
     }
 
     private void setDirectionState(KeyCode code, boolean pressed) {
-        // Java 24 pattern matching for switch
+        // Pattern matching for switch (Java 21, JEP 441)
         switch (code) {
             case UP, W -> up.set(pressed);
             case DOWN, S -> down.set(pressed);
