@@ -17,10 +17,11 @@ import java.util.function.Consumer;
  */
 public final class MenuController {
 
-    // Camera positioning for game start
-    private static final double CAMERA_Y_POSITION = -500;
-    private static final double CAMERA_X_POSITION = -500;
-    private static final double CAMERA_ROTATION = -45;
+    // Camera positioning for perspective game view (centered on board)
+    private static final double CAMERA_X_POSITION = 0;      // Center horizontally
+    private static final double CAMERA_Y_POSITION = -450;   // Height above board
+    private static final double CAMERA_Z_POSITION = -600;   // Distance from board (closer)
+    private static final double CAMERA_ROTATION_X = -45;    // Tilt down for perspective view
 
     // Info overlay positions for different screens
     private static final double INSTRUCTIONS_X = 130;
@@ -73,12 +74,13 @@ public final class MenuController {
 
     private void showStartScreen() {
         stateChanger.accept(new GameState.Playing(0, 1));
-        var camera = components.camera();
-        camera.setTranslateZ(0);
-        camera.setTranslateY(CAMERA_Y_POSITION);
+        // Position and rotate the perspective camera to view the board centered
+        var camera = components.boardCamera();
         camera.setTranslateX(CAMERA_X_POSITION);
+        camera.setTranslateY(CAMERA_Y_POSITION);
+        camera.setTranslateZ(CAMERA_Z_POSITION);
         camera.setRotationAxis(Rotate.X_AXIS);
-        camera.setRotate(CAMERA_ROTATION);
+        camera.setRotate(CAMERA_ROTATION_X);
     }
 
     private void showInstructions() {
