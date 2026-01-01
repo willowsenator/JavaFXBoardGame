@@ -152,7 +152,7 @@ public final class SceneBuilder {
                 Color.BLUE, FontPosture.REGULAR, assets);
 
         Text codeText = createStyledText(
-                "Game Design, User Interface Design,\nJava Programming by Omar Fernando Moreno Benito.\n",
+                "Game Design, User Interface Design,\nJava Programming by Omar Fernando Moreno Benito.",
                 Color.BLUE, FontPosture.REGULAR, assets);
 
         return new TextAssets(playText, moreText, helpText, cardText, copyrightText, creditText, codeText);
