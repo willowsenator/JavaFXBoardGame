@@ -133,7 +133,7 @@ public final class SceneBuilder {
                 Color.WHITE, FontPosture.ITALIC, assets);
 
         Text helpText = createStyledText(
-                "To play game roll the dice, advance game piece\nand follow game board instruction.\n",
+                "To play the game roll the dice, advance game piece\nand follow game board instruction.\n",
                 Color.GREEN, FontPosture.REGULAR, assets);
 
         Text cardText = createStyledText(
