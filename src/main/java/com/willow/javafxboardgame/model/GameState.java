@@ -3,8 +3,8 @@ package com.willow.javafxboardgame.model;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Sealed interface for game states (Java 17 sealed classes, JEP 409).
- * Provides exhaustive pattern matching in switch expressions (Java 21, JEP 441).
+ * Sealed interface for game states using Java 24 sealed classes.
+ * Provides exhaustive pattern matching in switch expressions.
  */
 public sealed interface GameState permits
         GameState.Menu,
@@ -56,10 +56,10 @@ public sealed interface GameState permits
     }
 
     /**
-     * Pattern match on game state using record patterns (Java 21, JEP 440).
+     * Pattern match on game state (Java 24 style).
      */
     @SuppressFBWarnings(value = {"DLS_DEAD_LOCAL_STORE", "EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"},
-            justification = "Pattern matching with record deconstruction (Java 21, JEP 440) - SpotBugs false positive")
+            justification = "Java 24 pattern matching with record deconstruction - SpotBugs false positive")
     default String getDisplayName() {
         return switch (this) {
             case Menu _ -> "Main Menu";
@@ -73,7 +73,7 @@ public sealed interface GameState permits
      * Check if game accepts input.
      */
     @SuppressFBWarnings(value = "ITC_INHERITANCE_TYPE_CHECKING",
-            justification = "Exhaustive pattern matching on sealed interface (Java 21, JEP 441)")
+            justification = "Java 21 exhaustive pattern matching on sealed interface")
     default boolean acceptsInput() {
         return switch (this) {
             case Playing _ -> true;
