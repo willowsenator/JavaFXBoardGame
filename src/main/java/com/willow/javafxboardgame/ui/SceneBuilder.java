@@ -36,7 +36,7 @@ public final class SceneBuilder {
 
     // Board configuration - 8 main boards with subboards between them
     private static final int MAIN_BOARD_COUNT = 8;
-    private static final int SUB_BOARDS_PER_SEGMENT = 2;  // 2 per segment × 2 segments per edge = 4 per edge
+    private static final int SUB_BOARDS_PER_SEGMENT = 2;  // Number of subboards per segment
     private static final int MAIN_BOARD_SIZE = 100;
     private static final int BOARD_HEIGHT = 10;
     private static final int SUB_BOARD_SIZE = 100;
