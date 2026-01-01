@@ -138,7 +138,7 @@ public final class SceneBuilder {
 
         Text cardText = createStyledText(
                 """
-                        If you land on square that requires you draw a card
+                        If you land on a square that requires you to draw a card
                         it will appear in the floating UI text area.
                         """,
                 Color.GREEN, FontPosture.REGULAR, assets);
@@ -152,7 +152,7 @@ public final class SceneBuilder {
                 Color.BLUE, FontPosture.REGULAR, assets);
 
         Text codeText = createStyledText(
-                "Game Design, User Interface Design\n Omar Fernando Moreno Benito.\n",
+                "Game Design, User Interface Design,\nJava Programming by Omar Fernando Moreno Benito.\n",
                 Color.BLUE, FontPosture.REGULAR, assets);
 
         return new TextAssets(playText, moreText, helpText, cardText, copyrightText, creditText, codeText);
