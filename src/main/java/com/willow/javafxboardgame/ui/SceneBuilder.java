@@ -3,9 +3,11 @@ package com.willow.javafxboardgame.ui;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.ParallelCamera;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -36,7 +38,7 @@ public final class SceneBuilder {
     private static final int MAIN_BOARD_COUNT = 8;
     private static final int SUB_BOARDS_PER_SEGMENT = 2;  // 2 per segment × 2 segments per edge = 4 per edge
     private static final int MAIN_BOARD_SIZE = 100;
-    private static final int BOARD_HEIGHT = 5;
+    private static final int BOARD_HEIGHT = 10;
     private static final int SUB_BOARD_SIZE = 100;
 
     // Board layout - 8 main boards arranged in a square pattern
@@ -48,8 +50,8 @@ public final class SceneBuilder {
     private static final int CENTER_SIZE = 600;
 
     // Camera configuration
-    private static final double CAMERA_NEAR_CLIP = 0.1;
-    private static final double CAMERA_FAR_CLIP = 5000;
+    private static final double CAMERA_NEAR_CLIP = 1;
+    private static final double CAMERA_FAR_CLIP = 10000;
 
     // Logo positioning
     private static final double LOGO_SCALE = 0.8;
@@ -70,6 +72,11 @@ public final class SceneBuilder {
     // Light positioning
     private static final double LIGHT_Y_OFFSET = -25;
 
+    // 3D SubScene configuration (perspective camera for board - full window size)
+    private static final int SUBSCENE_WIDTH = SCENE_WIDTH;
+    private static final int SUBSCENE_HEIGHT = SCENE_HEIGHT;
+    private static final double CAMERA_FIELD_OF_VIEW = 45;
+
     private SceneBuilder() {
         // Static utility class
     }
@@ -81,37 +88,40 @@ public final class SceneBuilder {
      * @return immutable record containing scene components
      */
     public static SceneComponents build(GameAssets assets) {
+        var ctx = createBuildContext(assets);
+        addNodesToSceneGraph(ctx.uiNodes(), ctx.textAssets(), ctx.boardSubScene());
+
+        var scene = new Scene(ctx.uiNodes().root(), SCENE_WIDTH, SCENE_HEIGHT);
+        scene.setFill(Color.BLACK);
+
+        return createSceneComponents(scene, ctx);
+    }
+
+    private static BuildContext createBuildContext(GameAssets assets) {
         var textAssets = createTextAssets(assets);
         var uiNodes = createUINodes(assets);
         var gameBoard = createGameBoardNodes(assets);
-
-        addNodesToSceneGraph(uiNodes, gameBoard, textAssets);
-
-        var scene = new Scene(uiNodes.root(), SCENE_WIDTH, SCENE_HEIGHT);
-        scene.setFill(Color.BLACK);
-        scene.setCamera(uiNodes.camera());
-
-        return new SceneComponents(
-                scene,
-                uiNodes.uiLayout(),
-                uiNodes.boardGameBackPlate(),
-                uiNodes.logoLayer(),
-                uiNodes.infoOverlay(),
-                uiNodes.camera(),
-                uiNodes.gameButton(),
-                uiNodes.helpButton(),
-                uiNodes.legalButton(),
-                uiNodes.creditButton(),
-                uiNodes.scoreButton(),
-                textAssets.playText(),
-                textAssets.moreText(),
-                textAssets.helpText(),
-                textAssets.cardText(),
-                textAssets.copyrightText(),
-                textAssets.creditText(),
-                textAssets.codeText()
-        );
+        var boardCamera = createBoardCamera();
+        var boardSubScene = createBoardSubScene(gameBoard, boardCamera);
+        return new BuildContext(textAssets, uiNodes, gameBoard, boardCamera, boardSubScene);
     }
+
+    private static SceneComponents createSceneComponents(Scene scene, BuildContext ctx) {
+        return new SceneComponents(
+                scene, ctx.boardSubScene(), ctx.gameBoard().gameBoard(), ctx.boardCamera(),
+                ctx.uiNodes().uiLayout(), ctx.uiNodes().boardGameBackPlate(),
+                ctx.uiNodes().logoLayer(), ctx.uiNodes().infoOverlay(),
+                ctx.uiNodes().gameButton(), ctx.uiNodes().helpButton(),
+                ctx.uiNodes().legalButton(), ctx.uiNodes().creditButton(),
+                ctx.uiNodes().scoreButton(), ctx.textAssets().playText(),
+                ctx.textAssets().moreText(), ctx.textAssets().helpText(),
+                ctx.textAssets().cardText(), ctx.textAssets().copyrightText(),
+                ctx.textAssets().creditText(), ctx.textAssets().codeText());
+    }
+
+    private record BuildContext(
+            TextAssets textAssets, UINodes uiNodes, GameBoardNodes gameBoard,
+            PerspectiveCamera boardCamera, SubScene boardSubScene) { }
 
     private static TextAssets createTextAssets(GameAssets assets) {
         Text playText = createStyledText(
@@ -158,7 +168,6 @@ public final class SceneBuilder {
 
     private static UINodes createUINodes(GameAssets assets) {
         Group root = new Group();
-        ParallelCamera camera = createCamera();
         StackPane uiLayout = createUILayout(assets);
         ImageView boardGameBackPlate = createBackPlate(assets);
         ImageView logoLayer = createLogoLayer(assets);
@@ -172,18 +181,34 @@ public final class SceneBuilder {
         Button scoreButton = createButton("High Scores");
 
         return new UINodes(
-                root, camera, uiLayout, boardGameBackPlate, logoLayer,
+                root, uiLayout, boardGameBackPlate, logoLayer,
                 infoOverlay, uiContainer,
                 gameButton, helpButton, legalButton, creditButton, scoreButton
         );
     }
 
-    private static ParallelCamera createCamera() {
-        ParallelCamera camera = new ParallelCamera();
-        camera.setTranslateZ(0);
+    private static PerspectiveCamera createBoardCamera() {
+        PerspectiveCamera camera = new PerspectiveCamera(true);
         camera.setNearClip(CAMERA_NEAR_CLIP);
         camera.setFarClip(CAMERA_FAR_CLIP);
+        camera.setFieldOfView(CAMERA_FIELD_OF_VIEW);
         return camera;
+    }
+
+    private static SubScene createBoardSubScene(GameBoardNodes gameBoard, PerspectiveCamera camera) {
+        // Add all board elements to the group
+        gameBoard.gameBoard().getChildren().add(gameBoard.light());
+        gameBoard.gameBoard().getChildren().add(gameBoard.centerBoard());
+        gameBoard.gameBoard().getChildren().addAll(gameBoard.mainBoards());
+        gameBoard.subBoards().forEach(segment ->
+                gameBoard.gameBoard().getChildren().addAll(segment));
+
+        SubScene subScene = new SubScene(
+                gameBoard.gameBoard(), SUBSCENE_WIDTH, SUBSCENE_HEIGHT,
+                true, SceneAntialiasing.BALANCED);
+        subScene.setFill(Color.TRANSPARENT);
+        subScene.setCamera(camera);
+        return subScene;
     }
 
     private static StackPane createUILayout(GameAssets assets) {
@@ -314,22 +339,15 @@ public final class SceneBuilder {
         return center;
     }
 
-    private static void addNodesToSceneGraph(UINodes ui, GameBoardNodes board, TextAssets text) {
-        ui.root().getChildren().addAll(board.gameBoard(), ui.uiLayout());
-
-        // Add center board first (at bottom layer)
-        board.gameBoard().getChildren().add(board.centerBoard());
-
-        // Add main boards
-        board.gameBoard().getChildren().addAll(board.mainBoards());
-
-        // Add all subboard segments
-        board.subBoards().forEach(segment -> board.gameBoard().getChildren().addAll(segment));
+    private static void addNodesToSceneGraph(UINodes ui, TextAssets text, SubScene boardSubScene) {
+        // Add SubScene (3D board) first, then UI overlay on top
+        ui.root().getChildren().addAll(boardSubScene, ui.uiLayout());
 
         ui.uiLayout().getChildren().addAll(
                 ui.logoLayer(), ui.boardGameBackPlate(), ui.infoOverlay(), ui.uiContainer());
         ui.uiContainer().getChildren().addAll(
-                ui.gameButton(), ui.helpButton(), ui.legalButton(), ui.creditButton(), ui.scoreButton());
+                ui.gameButton(), ui.helpButton(), ui.legalButton(), ui.creditButton(),
+                ui.scoreButton());
         ui.infoOverlay().getChildren().addAll(text.playText(), text.moreText());
     }
 
@@ -351,7 +369,6 @@ public final class SceneBuilder {
      */
     private record UINodes(
             Group root,
-            ParallelCamera camera,
             StackPane uiLayout,
             ImageView boardGameBackPlate,
             ImageView logoLayer,

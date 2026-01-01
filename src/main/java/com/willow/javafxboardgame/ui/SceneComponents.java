@@ -1,7 +1,9 @@
 package com.willow.javafxboardgame.ui;
 
-import javafx.scene.ParallelCamera;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -19,11 +21,13 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
         justification = "Record provides scene components for event wiring; JavaFX nodes are mutable")
 public record SceneComponents(
         Scene scene,
+        SubScene boardSubScene,
+        Group gameBoard,
+        PerspectiveCamera boardCamera,
         StackPane uiLayout,
         ImageView boardGameBackPlate,
         ImageView logoLayer,
         TextFlow infoOverlay,
-        ParallelCamera camera,
         Button gameButton,
         Button helpButton,
         Button legalButton,
