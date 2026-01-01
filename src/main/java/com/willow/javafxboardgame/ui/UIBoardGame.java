@@ -53,10 +53,10 @@ public class UIBoardGame {
     }
 
     /**
-     * Transition to a new game state using Java 24 pattern matching.
+     * Transition to a new game state using Java 21 pattern matching for switch.
      */
     @SuppressFBWarnings(value = "ITC_INHERITANCE_TYPE_CHECKING",
-            justification = "Java 24 exhaustive pattern matching on sealed interface")
+            justification = "Java 21 exhaustive pattern matching for switch on sealed interface")
     public void setGameState(GameState newState) {
         this.gameState = switch (newState) {
             case GameState.Menu _ -> {
