@@ -1,8 +1,11 @@
 module com.willow.javafxboardgame {
     requires javafx.controls;
+    requires javafx.graphics;
+    requires static com.github.spotbugs.annotations;
 
-    opens com.willow.javafxboardgame to javafx.fxml;
     exports com.willow.javafxboardgame;
     exports com.willow.javafxboardgame.ui;
-    opens com.willow.javafxboardgame.ui to javafx.fxml;
+    exports com.willow.javafxboardgame.model;
+    exports com.willow.javafxboardgame.input;
+    exports com.willow.javafxboardgame.helper;
 }

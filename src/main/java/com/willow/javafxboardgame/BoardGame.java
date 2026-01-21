@@ -7,19 +7,17 @@ import javafx.stage.StageStyle;
 
 public class BoardGame extends Application {
 
-
     @Override
     public void start(Stage stage) {
-        var scene = UIBoardGame.init();
+        var uiBoardGame = new UIBoardGame();
         stage.initStyle(StageStyle.DECORATED);
         stage.setTitle("BoardGame (JavaFX Game)");
-        stage.setScene(scene);
+        stage.setScene(uiBoardGame.getScene());
 
         stage.show();
     }
 
-
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 }
