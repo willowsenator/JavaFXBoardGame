@@ -3,7 +3,7 @@ package com.willow.javafxboardgame.model;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Sealed interface for game states using Java 24 sealed classes.
+ * Sealed interface for game states using Java 17 sealed classes.
  * Provides exhaustive pattern matching in switch expressions.
  */
 public sealed interface GameState permits
@@ -56,10 +56,10 @@ public sealed interface GameState permits
     }
 
     /**
-     * Pattern match on game state (Java 24 style).
+     * Pattern match on game state (Java 21 style).
      */
     @SuppressFBWarnings(value = {"DLS_DEAD_LOCAL_STORE", "EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"},
-            justification = "Java 24 pattern matching with record deconstruction - SpotBugs false positive")
+            justification = "Java 21 pattern matching with record deconstruction - SpotBugs false positive")
     default String getDisplayName() {
         return switch (this) {
             case Menu _ -> "Main Menu";
