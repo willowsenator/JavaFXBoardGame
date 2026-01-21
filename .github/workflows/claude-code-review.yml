@@ -6,8 +6,8 @@ on:
 
 jobs:
   claude-review:
-    # Only run when PR has 'claude' label
-    if: contains(github.event.pull_request.labels.*.name, 'claude')
+    # Only run when PR has 'claude-review' label
+    if: contains(github.event.pull_request.labels.*.name, 'claude-review')
     runs-on: ubuntu-latest
     permissions:
       contents: read
